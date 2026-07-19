@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMA Linh Thú — Gacha Collection Demo</title>
+<style>
+:root{
+  --ink:#3d2a1c;
+  --ink2:#694b32;
+  --cream:#fff5df;
+  --cream2:#f7e8ca;
+  --paper:#fffdf8;
+  --line:#4a3322;
+  --coral:#ff6b67;
+  --orange:#ff9c45;
+  --mint:#22c8a7;
+  --sky:#57a8ff;
+  --blue:#4f83ee;
+  --gold:#f2b52f;
+  --purple:#8b62e5;
+  --red:#ef5f66;
+  --green:#61c96e;
+  --shadow:0 9px 0 rgba(61,42,28,.18),0 16px 28px rgba(61,42,28,.12);
+  --small-shadow:0 5px 0 rgba(61,42,28,.15),0 9px 18px rgba(61,42,28,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif;color:var(--ink);background:#f9efd9}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.48}
+body{
+  background:
+    radial-gradient(circle at 10% 10%,rgba(255,170,174,.35),transparent 28%),
+    radial-gradient(circle at 84% 18%,rgba(255,214,104,.36),transparent 30%),
+    radial-gradient(circle at 68% 78%,rgba(98,185,255,.24),transparent 32%),
+    linear-gradient(135deg,#ffd8d4,#fff0ca 50%,#dff1ff);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.app{min-height:100vh;padding-bottom:88px}
+.topbar{
+  position:sticky;top:0;z-index:120;min-height:62px;padding:9px 16px;
+  display:grid;grid-template-columns:56px 1fr auto;align-items:center;
+  background:rgba(255,247,229,.96);border-bottom:4px solid var(--line);backdrop-filter:blur(10px)
+}
+.back-btn,.settings-btn{
+  width:42px;height:42px;border:4px solid var(--line);border-radius:14px;background:#fff;font-size:22px;font-weight:1000;
+  box-shadow:0 4px 0 rgba(61,42,28,.15)
+}
+.game-title{text-align:center;font-size:18px;font-weight:1000;letter-spacing:-.02em}
+.resources{display:flex;gap:8px;align-items:center}
+.res-pill{
+  display:flex;align-items:center;gap:5px;min-width:70px;padding:6px 10px;border:3px solid var(--line);border-radius:999px;
+  font-size:12px;font-weight:1000;box-shadow:0 3px 0 rgba(61,42,28,.12);background:#fff
+}
+.res-pill.ticket{background:#ff7277;color:#fff}
+.res-pill.coin{background:#ffc84a}
+.res-pill.energy{background:#24c8a8;color:#fff}
+.res-pill.point{background:#8c66e9;color:#fff}
+.main{width:min(1540px,100%);margin:0 auto;padding:16px 18px 28px}
+.screen{display:none}
+.screen.active{display:block}
+.card{
+  background:rgba(255,253,248,.94);border:4px solid var(--line);border-radius:22px;box-shadow:var(--shadow)
+}
+.section-title{font-size:19px;font-weight:1000;margin:4px 0 12px}
+.eyebrow{font-size:11px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.sub{color:var(--ink2);font-size:12px;line-height:1.45}
+.progress{
+  height:10px;border:3px solid var(--line);border-radius:999px;background:#fff;overflow:hidden
+}
+.progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sky),var(--mint));transition:width .3s}
+.btn{
+  border:4px solid var(--line);border-radius:15px;padding:11px 15px;font-weight:1000;background:#fff;
+  box-shadow:0 5px 0 rgba(61,42,28,.2);transition:.15s
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(61,42,28,.2)}
+.btn.primary{color:#fff;background:linear-gradient(135deg,var(--coral),var(--orange))}
+.btn.mint{color:#fff;background:var(--mint)}
+.btn.blue{color:#fff;background:var(--blue)}
+.btn.purple{color:#fff;background:var(--purple)}
+.btn.gold{background:var(--gold)}
+.btn.small{padding:7px 10px;border-width:3px;border-radius:11px;font-size:11px;box-shadow:0 3px 0 rgba(61,42,28,.18)}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;border:3px solid var(--line);border-radius:999px;padding:7px 11px;background:#fff;font-size:11px;font-weight:1000
+}
+.chip.active{background:var(--ink);color:#fff}
+.badge{
+  display:inline-flex;align-items:center;padding:4px 8px;border:2px solid var(--line);border-radius:999px;font-size:10px;font-weight:1000;background:#fff
+}
+.r-common{background:#8ec8ff}.r-rare{background:#ff838b}.r-epic{background:#b38bf4}.r-legendary{background:#ffd45d}
+.notice{
+  padding:13px 15px;border:3px solid var(--line);border-radius:17px;background:linear-gradient(135deg,#fff3b8,#fff);font-size:12px;line-height:1.45
+}
+.bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:130;height:82px;display:grid;grid-template-columns:repeat(5,1fr);
+  background:rgba(255,247,229,.97);border-top:4px solid var(--line);backdrop-filter:blur(10px)
+}
+.nav-btn{
+  border:0;background:transparent;color:var(--ink2);font-weight:1000;font-size:11px;padding:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px
+}
+.nav-btn .nav-icon{font-size:22px;line-height:1}
+.nav-btn.active{background:#f2e5ca;color:var(--ink);box-shadow:inset 0 0 0 3px var(--blue);border-radius:16px;margin:5px}
+.nav-btn.active .nav-icon{width:38px;height:38px;border:3px solid var(--line);border-radius:12px;background:var(--coral);color:#fff;display:grid;place-items:center}
+
+/* GARDEN */
+.garden{
+  min-height:570px;position:relative;overflow:hidden;border:4px solid var(--line);border-radius:24px;
+  background:
+    radial-gradient(circle at 14% 15%,#ffd66b 0 34px,rgba(255,214,107,.28) 35px,transparent 118px),
+    linear-gradient(#b9dcff 0 52%,#55a6ff 52% 70%,#1fcb9d 70% 84%,#8bd3a7 84%);
+  box-shadow:var(--shadow)
+}
+.cloud{position:absolute;background:#fff;border-radius:999px;opacity:.9}
+.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%}
+.c1{width:130px;height:26px;left:8%;top:18%}.c1:before{width:55px;height:55px;left:20px;top:-33px}.c1:after{width:65px;height:65px;right:10px;top:-40px}
+.c2{width:110px;height:22px;left:33%;top:25%}.c2:before{width:48px;height:48px;left:15px;top:-28px}.c2:after{width:52px;height:52px;right:10px;top:-30px}
+.c3{width:90px;height:20px;right:18%;top:12%;transform:rotate(-70deg)}
+.hill{position:absolute;left:-8%;right:-8%;bottom:18%;height:150px;border-top:7px solid var(--line);border-radius:50% 50% 0 0;background:#26cba6}
+.waterline{position:absolute;left:0;right:0;top:56%;height:3px;background:rgba(255,255,255,.55);box-shadow:0 25px 0 rgba(255,255,255,.3),0 52px 0 rgba(255,255,255,.22)}
+.tree{position:absolute;right:9%;bottom:16%;width:155px;height:185px}
+.trunk{position:absolute;left:66px;bottom:0;width:24px;height:95px;border:7px solid var(--line);border-radius:16px;background:#9c613c}
+.leaf{position:absolute;width:91px;height:91px;border:7px solid var(--line);border-radius:50%;background:#27c9a5}
+.l1{left:32px;top:0}.l2{left:0;top:60px;background:#96d5b0}.l3{right:0;top:52px}
+.mushroom{position:absolute;bottom:19%;width:45px;height:56px}
+.mushroom:before{content:"";position:absolute;left:15px;bottom:0;width:13px;height:35px;border:6px solid var(--line);border-radius:8px;background:#fff4da}
+.mushroom:after{content:"";position:absolute;left:0;top:0;width:45px;height:28px;border:6px solid var(--line);border-radius:40px 40px 8px 8px;background:#ff686c}
+.m1{left:10%}.m2{left:17%;transform:scale(.72)}
+.garden-pet-wrap{
+  position:absolute;left:22%;bottom:22%;width:270px;height:280px;display:flex;align-items:flex-end;justify-content:center;
+  filter:drop-shadow(0 18px 10px rgba(61,42,28,.24));cursor:pointer
+}
+.garden-pet-wrap:hover{animation:petHop .55s ease}
+@keyframes petHop{50%{transform:translateY(-14px) rotate(-2deg)}}
+.pet-nameplate{
+  position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);padding:6px 13px;border:3px solid var(--line);border-radius:999px;background:#fff;font-size:12px;font-weight:1000;white-space:nowrap
+}
+.garden-actions{
+  position:absolute;left:18px;right:18px;bottom:15px;display:grid;grid-template-columns:repeat(4,1fr);gap:9px
+}
+.action-btn{
+  border:4px solid var(--line);border-radius:15px;padding:10px 7px;background:#fff5df;font-size:11px;font-weight:1000;box-shadow:0 5px 0 rgba(61,42,28,.18)
+}
+.action-btn b{display:block;font-size:20px;margin-bottom:3px}
+.action-btn small{display:block;color:var(--ink2)}
+.garden-grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+.pet-panel{padding:16px}
+.pet-stat{margin-top:12px}
+.pet-stat-head{display:flex;justify-content:space-between;font-size:11px;font-weight:1000;margin-bottom:5px}
+.pet-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.pet-slot{
+  min-height:86px;border:3px solid var(--line);border-radius:15px;background:#f9ecd3;display:grid;place-items:center;position:relative;overflow:hidden
+}
+.pet-slot.active{outline:4px solid var(--mint)}
+.pet-slot .mini-label{position:absolute;left:4px;right:4px;bottom:3px;text-align:center;font-size:9px;font-weight:1000;background:rgba(255,255,255,.88);border-radius:7px}
+.streak{
+  margin-bottom:14px;padding:13px 16px;border:4px solid var(--line);border-radius:20px;background:linear-gradient(90deg,var(--coral),var(--orange));color:#fff;box-shadow:var(--small-shadow);
+  display:flex;align-items:center;justify-content:space-between
+}
+.streak strong{display:block;font-size:13px}.streak small{font-size:11px}
+.garden-tip{margin-top:13px;padding:12px;border:3px dashed var(--line);border-radius:15px;background:#fff9ed;font-size:12px;line-height:1.45}
+
+/* SUMMON */
+.summon-layout{display:grid;grid-template-columns:310px 1fr 340px;gap:16px}
+.banner-list,.pity-card{padding:15px}
+.banner-item{
+  width:100%;text-align:left;padding:12px;border:3px solid var(--line);border-radius:15px;background:#fff;margin-top:9px;box-shadow:0 4px 0 rgba(61,42,28,.15)
+}
+.banner-item.active{background:linear-gradient(135deg,#ffd6d2,#ffe6a8);outline:4px solid var(--coral)}
+.banner-item strong{display:block}.banner-item small{color:var(--ink2)}
+.portal-card{
+  min-height:590px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden
+}
+.portal-card:before{
+  content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 50% 45%,rgba(84,155,255,.28),transparent 28%),
+  radial-gradient(circle at 20% 20%,rgba(255,116,119,.18),transparent 20%),
+  radial-gradient(circle at 80% 78%,rgba(37,201,169,.16),transparent 24%)
+}
+.portal{
+  position:relative;width:310px;height:310px;border-radius:50%;display:grid;place-items:center;margin:8px auto 16px;
+  background:radial-gradient(circle,#e7f3ff 0 23%,#70b5ff 24% 42%,#fff 43% 51%,#e6d7bd 52% 62%,#fff 63% 68%,#6b523b 69%);
+  box-shadow:0 20px 25px rgba(61,42,28,.25),inset 0 0 25px rgba(255,255,255,.8);
+  animation:portalFloat 3s ease-in-out infinite
+}
+.portal:before{
+  content:"★";font-size:105px;color:#fff0b8;text-shadow:0 5px 0 var(--line),0 0 22px #fff;
+  transform:translateY(-4px)
+}
+.portal:after{
+  content:"";position:absolute;inset:24px;border:5px dashed #5b9eff;border-radius:50%;animation:spin 9s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes portalFloat{50%{transform:translateY(-8px)}}
+.portal.summoning{animation:portalBurst .85s ease}
+@keyframes portalBurst{
+  0%{transform:scale(1) rotate(0)}
+  35%{transform:scale(1.15) rotate(15deg);filter:brightness(1.4)}
+  75%{transform:scale(.92) rotate(-8deg);filter:brightness(1.9)}
+  100%{transform:scale(1);filter:brightness(1)}
+}
+.rates{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:6px 0 15px;font-size:11px;font-weight:1000}
+.rate-dot{width:10px;height:10px;border:2px solid var(--line);border-radius:50%;display:inline-block;margin-right:4px}
+.summon-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.summon-btn{min-width:210px;font-size:16px}
+.target-box{
+  margin-top:13px;padding:12px;border:3px solid var(--line);border-radius:15px;background:#fff8e8;text-align:left
+}
+.target-select{width:100%;padding:10px;border:3px solid var(--line);border-radius:11px;background:#fff;margin-top:7px;font-weight:900}
+.pity-row{margin-top:13px}
+.pity-row-head{display:flex;justify-content:space-between;font-size:11px;font-weight:1000;margin-bottom:5px}
+.trust-box{margin-top:14px;padding:13px;border:3px solid var(--line);border-radius:16px;background:linear-gradient(135deg,#dff9f1,#fff)}
+.trust-box strong{display:block;margin-bottom:5px}
+.trust-box ul{margin:6px 0 0;padding-left:18px;color:var(--ink2);font-size:11px;line-height:1.5}
+
+/* COLLECTION */
+.collection-head{
+  padding:14px 16px;margin-bottom:13px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center
+}
+.trophy{
+  width:52px;height:52px;border:4px solid var(--line);border-radius:14px;background:linear-gradient(135deg,var(--sky),var(--mint));display:grid;place-items:center;font-size:26px
+}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.collection-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pet-card{
+  min-height:300px;padding:11px;position:relative;overflow:hidden;text-align:center;background:#fffdf8;border:4px solid var(--line);border-radius:20px;box-shadow:var(--small-shadow)
+}
+.pet-card.owned{background:linear-gradient(180deg,#dffff5 0 22%,#fffdf8 22%)}
+.pet-card.locked{background:linear-gradient(180deg,#e6e0d6 0 22%,#f4efe7 22%);color:#6f6459}
+.pet-card.targeted{outline:5px solid var(--gold)}
+.pet-art{
+  height:155px;border:3px solid var(--line);border-radius:15px;background:radial-gradient(circle at 50% 42%,#fff,rgba(255,255,255,.4) 40%,transparent 41%);display:grid;place-items:center;overflow:hidden
+}
+.pet-card.locked .pet-art{filter:grayscale(1);opacity:.55}
+.pet-card h3{margin:9px 0 4px;font-size:16px}
+.pet-meta{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.pet-card .level{font-size:11px;font-weight:900;margin-top:6px}
+.pet-card-actions{display:flex;gap:6px;justify-content:center;margin-top:9px;flex-wrap:wrap}
+.collection-sets{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.set-card{padding:14px}
+.set-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.set-card h3{margin:0;font-size:14px}
+.set-card p{margin:4px 0 9px;color:var(--ink2);font-size:11px}
+.missing-guide{margin-top:14px;padding:13px;border:3px solid var(--line);border-radius:17px;background:#fff6df}
+.missing-guide strong{display:block;margin-bottom:6px}
+
+/* MISSIONS */
+.mission-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px}
+.mission-list{display:grid;gap:12px}
+.mission-card{
+  padding:14px;display:grid;grid-template-columns:58px 1fr auto;gap:12px;align-items:center
+}
+.mission-icon{
+  width:54px;height:54px;border:4px solid var(--line);border-radius:15px;background:#fff;display:grid;place-items:center;font-size:25px
+}
+.mission-title{font-weight:1000;font-size:14px}
+.mission-desc{color:var(--ink2);font-size:11px;margin:3px 0 9px}
+.mission-reward{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.reward-mini{padding:4px 7px;border:2px solid var(--line);border-radius:999px;background:#fff8e9;font-size:10px;font-weight:1000}
+.mission-action{min-width:135px}
+.brand-demo{padding:14px;margin-bottom:13px;background:linear-gradient(135deg,#fff,#e9f6ff)}
+.verify-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.verify-step{padding:9px;border:3px solid var(--line);border-radius:13px;background:#fff;text-align:center;font-size:10px;font-weight:900}
+
+/* REWARDS */
+.reward-layout{display:grid;grid-template-columns:1fr 340px;gap:16px}
+.reward-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.reward-card{padding:15px;text-align:center;position:relative;overflow:hidden}
+.reward-icon{font-size:50px;margin:5px 0}
+.reward-card h3{font-size:15px;margin:4px 0}
+.reward-card p{color:var(--ink2);font-size:11px;line-height:1.45;min-height:46px}
+.cost{font-size:14px;font-weight:1000;margin:9px 0}
+.wallet{padding:15px;position:sticky;top:82px;height:max-content}
+.wallet-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:2px dashed #d5c5ab;font-size:12px}
+.history{margin-top:14px}
+.history-item{padding:9px;border:3px solid var(--line);border-radius:13px;background:#fff;margin-top:8px;font-size:11px}
+.code{font-family:ui-monospace,monospace;font-weight:1000;color:#6c45c8}
+
+/* MODALS */
+.modal{
+  position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(49,33,22,.62);backdrop-filter:blur(8px)
+}
+.modal.show{display:flex}
+.modal-box{
+  width:min(720px,96vw);max-height:92vh;overflow:auto;padding:20px;border:4px solid var(--line);border-radius:24px;background:linear-gradient(135deg,#fff8e8,#fff);box-shadow:0 24px 0 rgba(61,42,28,.18),0 38px 80px rgba(0,0,0,.25)
+}
+.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.modal-head h2{margin:0}
+.close-btn{width:38px;height:38px;border:3px solid var(--line);border-radius:12px;background:#fff;font-size:20px;font-weight:1000}
+.pull-results{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+.result-card{
+  min-height:190px;padding:8px;border:4px solid var(--line);border-radius:16px;text-align:center;background:#fff;position:relative;animation:resultPop .45s ease both
+}
+.result-card:nth-child(2){animation-delay:.05s}.result-card:nth-child(3){animation-delay:.1s}.result-card:nth-child(4){animation-delay:.15s}.result-card:nth-child(5){animation-delay:.2s}
+.result-card:nth-child(6){animation-delay:.25s}.result-card:nth-child(7){animation-delay:.3s}.result-card:nth-child(8){animation-delay:.35s}.result-card:nth-child(9){animation-delay:.4s}.result-card:nth-child(10){animation-delay:.45s}
+@keyframes resultPop{from{transform:translateY(30px) scale(.8);opacity:0}to{transform:none;opacity:1}}
+.result-card h4{font-size:11px;margin:4px 0}
+.result-card small{font-size:9px}
+.new-tag{position:absolute;left:6px;top:6px;padding:3px 6px;border:2px solid var(--line);border-radius:999px;background:var(--gold);font-size:8px;font-weight:1000}
+.article-box{height:300px;overflow:auto;border:3px solid var(--line);border-radius:14px;background:#fff;padding:15px;line-height:1.6;font-size:12px}
+.timer{font-weight:1000}
+.qr-input,.invoice-input{width:100%;padding:11px;border:3px solid var(--line);border-radius:12px;background:#fff;margin-top:8px}
+.toast{
+  position:fixed;left:50%;bottom:100px;z-index:500;transform:translate(-50%,140px);background:var(--ink);color:#fff;padding:12px 17px;border-radius:13px;font-weight:1000;box-shadow:0 12px 26px rgba(0,0,0,.25);transition:.3s
+}
+.toast.show{transform:translate(-50%,0)}
+.spark{
+  position:absolute;width:8px;height:8px;border-radius:50%;background:#fff8a4;box-shadow:0 0 12px #fff;animation:spark 2.2s infinite ease-in-out
+}
+@keyframes spark{50%{transform:translateY(-18px) scale(1.7);opacity:.4}}
+
+@media(max-width:1200px){
+  .garden-grid,.summon-layout,.reward-layout{grid-template-columns:1fr}
+  .collection-grid{grid-template-columns:repeat(3,1fr)}
+  .reward-grid{grid-template-columns:repeat(2,1fr)}
+  .wallet{position:static}
+}
+@media(max-width:760px){
+  .topbar{grid-template-columns:45px 1fr}.resources{grid-column:1/-1;justify-content:center;margin-top:8px;flex-wrap:wrap}.game-title{text-align:right}
+  .main{padding:12px 10px 26px}
+  .garden{min-height:610px}.garden-pet-wrap{left:50%;transform:translateX(-50%);bottom:31%}.garden-actions{grid-template-columns:repeat(2,1fr)}
+  .collection-grid,.reward-grid,.collection-sets{grid-template-columns:1fr 1fr}
+  .pull-results{grid-template-columns:repeat(2,1fr)}
+  .mission-card{grid-template-columns:48px 1fr}.mission-action{grid-column:1/-1}
+  .verify-flow{grid-template-columns:1fr 1fr}
+  .bottom-nav{height:78px}.nav-btn{font-size:9px}
+}
+@media(max-width:470px){
+  .collection-grid,.reward-grid,.collection-sets{grid-template-columns:1fr}
+  .portal{width:260px;height:260px}.summon-btn{min-width:180px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="back-btn" id="resetBtn" title="Khởi động lại bản demo">↶</button>
+    <div class="game-title">GAMA Linh Thú</div>
+    <div class="resources">
+      <div class="res-pill ticket">🎟️ <span id="ticketsTop">12</span></div>
+      <div class="res-pill coin">🪙 <span id="coinsTop">100</span></div>
+      <div class="res-pill energy">⚡ <span id="energyTop">50</span></div>
+      <div class="res-pill point">✦ <span id="pointsTop">180</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- GARDEN -->
+    <section class="screen active" id="gardenScreen">
+      <div class="streak">
+        <div><strong>🔥 Xin chào, Tân thủ!</strong><small>1 ngày streak · Đăng nhập mỗi ngày để nhận Vé Triệu Hồi</small></div>
+        <button class="btn small gold" id="checkinBtn">Nhận điểm danh</button>
+      </div>
+
+      <div class="garden-grid">
+        <div class="garden">
+          <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+          <div class="waterline"></div><div class="hill"></div>
+          <div class="tree"><div class="trunk"></div><div class="leaf l1"></div><div class="leaf l2"></div><div class="leaf l3"></div></div>
+          <div class="mushroom m1"></div><div class="mushroom m2"></div>
+          <span class="spark" style="left:14%;top:22%"></span><span class="spark" style="left:37%;top:34%;animation-delay:.8s"></span><span class="spark" style="left:72%;top:28%;animation-delay:1.3s"></span>
+
+          <div class="garden-pet-wrap" id="gardenPetWrap" title="Chạm để tương tác">
+            <div id="gardenPet"></div>
+            <div class="pet-nameplate" id="gardenPetName">Phong Tiên · Lv.1</div>
+          </div>
+
+          <div class="garden-actions">
+            <button class="action-btn" data-action="feed"><b>🍎</b>Cho ăn<small>-5 năng lượng</small></button>
+            <button class="action-btn" data-action="play"><b>🎾</b>Chơi cùng<small>-5 năng lượng</small></button>
+            <button class="action-btn" data-action="train"><b>🏋️</b>Huấn luyện<small>-10 năng lượng</small></button>
+            <button class="action-btn" data-action="explore"><b>🗺️</b>Khám phá<small>-15 năng lượng</small></button>
+          </div>
+        </div>
+
+        <aside class="card pet-panel">
+          <div class="eyebrow">Linh thú đang chăm sóc</div>
+          <h2 id="activePetTitle" style="margin:5px 0 2px">Phong Tiên</h2>
+          <div class="sub" id="activePetMeta">Hệ Phong · Thường · Kỹ năng: tăng 5% Xu nhiệm vụ</div>
+
+          <div class="pet-stat">
+            <div class="pet-stat-head"><span>Kinh nghiệm</span><span id="xpText">0/100</span></div>
+            <div class="progress"><span id="xpBar"></span></div>
+          </div>
+          <div class="pet-stat">
+            <div class="pet-stat-head"><span>Độ thân thiết</span><span id="friendText">5/100</span></div>
+            <div class="progress"><span id="friendBar" style="background:linear-gradient(90deg,#ff8a9a,#ffba68)"></span></div>
+          </div>
+
+          <div class="section-title" style="font-size:14px;margin-top:16px">Linh thú trong Vườn</div>
+          <div class="pet-slots" id="gardenSlots"></div>
+
+          <div class="garden-tip">
+            <strong>Vòng lặp chăm sóc:</strong> Cho ăn, chơi, huấn luyện và khám phá giúp Linh Thú tăng cấp, tăng thân thiết và mở kỹ năng mới.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- SUMMON -->
+    <section class="screen" id="summonScreen">
+      <div class="summon-layout">
+        <aside class="card banner-list">
+          <div class="eyebrow">Banner đang chọn</div>
+          <h2 style="margin:5px 0 4px" id="bannerTitle">Banner Ánh Hùng</h2>
+          <div class="sub">Mỗi banner có nhóm Linh Thú và cơ chế cá nhân hóa riêng.</div>
+          <button class="banner-item active" data-banner="standard"><strong>🌟 Banner Ánh Hùng</strong><small>Phổ thông · Luôn mở</small></button>
+          <button class="banner-item" data-banner="event"><strong>🔥 Lễ Hội Hỏa Long</strong><small>Sự kiện · Tăng tỷ lệ hệ Hỏa</small></button>
+          <button class="banner-item" data-banner="personal"><strong>🧭 Banner Cá Nhân Hóa</strong><small>Ưu tiên Linh Thú mục tiêu</small></button>
+
+          <div class="target-box">
+            <strong>🎯 Linh Thú mục tiêu</strong>
+            <div class="sub">Chọn Linh Thú còn thiếu. Mỗi lượt không trúng sẽ tăng tiến độ bảo đảm.</div>
+            <select class="target-select" id="targetSelect"></select>
+          </div>
+        </aside>
+
+        <div class="card portal-card">
+          <div style="position:relative;z-index:2">
+            <div class="eyebrow">Cổng triệu hồi</div>
+            <h2 style="margin:4px 0">Triệu hồi Linh Thú</h2>
+            <div class="portal" id="portal"></div>
+            <div class="rates">
+              <span><i class="rate-dot r-common"></i>Thường 65%</span>
+              <span><i class="rate-dot r-rare"></i>Hiếm 25%</span>
+              <span><i class="rate-dot r-epic"></i>Sử Thi 8%</span>
+              <span><i class="rate-dot r-legendary"></i>Huyền Thoại 2%</span>
+            </div>
+            <div class="summon-actions">
+              <button class="btn primary summon-btn" id="summonOneBtn">TRIỆU HỒI ×1<br><small>Tốn 1 Vé</small></button>
+              <button class="btn purple summon-btn" id="summonTenBtn">TRIỆU HỒI ×10<br><small>Tốn 9 Vé · Ít nhất 1 Hiếm</small></button>
+            </div>
+            <div class="notice" style="margin-top:16px;text-align:left">
+              <strong>Không có lượt triệu hồi vô ích:</strong> Linh Thú trùng tự động chuyển thành Mảnh Linh Thú, Tinh Hoa và Điểm Linh Thú.
+            </div>
+          </div>
+        </div>
+
+        <aside class="card pity-card">
+          <div class="eyebrow">Bảo đảm hoàn thành bộ</div>
+          <h2 style="margin:5px 0">Thanh bảo đảm</h2>
+          <div class="sub">May mắn giúp bạn hoàn thành nhanh hơn, nhưng chơi đủ lâu sẽ chắc chắn nhận được Linh Thú còn thiếu.</div>
+
+          <div class="pity-row">
+            <div class="pity-row-head"><span>Hiếm hoặc cao hơn</span><span id="rarePityText">0/10</span></div>
+            <div class="progress"><span id="rarePityBar"></span></div>
+          </div>
+          <div class="pity-row">
+            <div class="pity-row-head"><span>Linh Thú chưa sở hữu</span><span id="newPityText">0/30</span></div>
+            <div class="progress"><span id="newPityBar" style="background:linear-gradient(90deg,#ff7b86,#ffb347)"></span></div>
+          </div>
+          <div class="pity-row">
+            <div class="pity-row-head"><span>Huyền Thoại</span><span id="legendPityText">0/80</span></div>
+            <div class="progress"><span id="legendPityBar" style="background:linear-gradient(90deg,#a36ce7,#ffd34e)"></span></div>
+          </div>
+          <div class="pity-row">
+            <div class="pity-row-head"><span>Mục tiêu đã chọn</span><span id="targetPityText">0/30</span></div>
+            <div class="progress"><span id="targetPityBar" style="background:linear-gradient(90deg,#21c8a5,#5e96ff)"></span></div>
+          </div>
+
+          <div class="trust-box">
+            <strong>🛡️ Cam kết công bằng</strong>
+            <ul>
+              <li>Mốc 10 lượt: bảo đảm ít nhất 1 Linh Thú Hiếm.</li>
+              <li>Mốc 30 lượt: bảo đảm 1 Linh Thú chưa sở hữu.</li>
+              <li>Mốc 80 lượt: bảo đảm 1 Linh Thú Huyền Thoại.</li>
+              <li>Đủ Mảnh/Tinh Hoa có thể đổi trực tiếp Linh Thú còn thiếu.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- COLLECTION -->
+    <section class="screen" id="collectionScreen">
+      <div class="card collection-head">
+        <div class="trophy">🏆</div>
+        <div>
+          <div class="eyebrow">Tiến độ sưu tập</div>
+          <h2 style="margin:3px 0" id="collectionCount">1/12 Linh Thú</h2>
+          <div class="progress"><span id="collectionProgress"></span></div>
+        </div>
+        <div style="text-align:right">
+          <strong id="essenceCount">0 Tinh Hoa</strong>
+          <div class="sub">Dùng để đổi Linh Thú còn thiếu</div>
+        </div>
+      </div>
+
+      <div class="collection-sets" id="collectionSets"></div>
+
+      <div class="filters">
+        <button class="chip active" data-filter="all">Tất cả</button>
+        <button class="chip" data-filter="common">Thường</button>
+        <button class="chip" data-filter="rare">Hiếm</button>
+        <button class="chip" data-filter="epic">Sử Thi</button>
+        <button class="chip" data-filter="legendary">Huyền Thoại</button>
+        <button class="chip" data-filter="missing">Chưa sở hữu</button>
+      </div>
+
+      <div class="collection-grid" id="collectionGrid"></div>
+
+      <div class="missing-guide" id="missingGuide">
+        <strong>Hướng dẫn nhận Linh Thú còn thiếu</strong>
+        Chọn một Linh Thú chưa sở hữu để xem banner phù hợp, số Mảnh cần đổi và tiến độ bảo đảm còn lại.
+      </div>
+    </section>
+
+    <!-- MISSIONS -->
+    <section class="screen" id="missionsScreen">
+      <div class="card brand-demo">
+        <div class="eyebrow">Nhiệm vụ thương hiệu có xác minh</div>
+        <h2 style="margin:5px 0">Không chỉ bấm là hoàn thành</h2>
+        <div class="sub">Hệ thống chỉ mở nút Nhận thưởng khi hành động được xác minh đúng điều kiện.</div>
+        <div class="verify-flow">
+          <div class="verify-step">1. Bấm thực hiện</div>
+          <div class="verify-step">2. Hoàn thành hành động</div>
+          <div class="verify-step">3. Hệ thống xác minh</div>
+          <div class="verify-step">4. Nhận thưởng</div>
+        </div>
+      </div>
+
+      <div class="mission-tabs">
+        <button class="chip active" data-mission-tab="daily">Nhiệm vụ ngày</button>
+        <button class="chip" data-mission-tab="weekly">Nhiệm vụ tuần</button>
+        <button class="chip" data-mission-tab="achievement">Thành tựu</button>
+        <button class="chip" data-mission-tab="brand">Nhiệm vụ thương hiệu</button>
+      </div>
+      <div class="mission-list" id="missionList"></div>
+    </section>
+
+    <!-- REWARDS -->
+    <section class="screen" id="rewardsScreen">
+      <div class="reward-layout">
+        <div>
+          <div class="section-title">Trung tâm đổi thưởng</div>
+          <div class="notice" style="margin-bottom:14px">
+            Dùng <strong>Điểm Linh Thú</strong> để đổi voucher, quà thật, quyền lợi thành viên hoặc Linh Thú giới hạn. Điểm không được quy đổi thành tiền mặt.
+          </div>
+          <div class="reward-grid" id="rewardGrid"></div>
+        </div>
+
+        <aside class="card wallet">
+          <div class="eyebrow">Ví phần thưởng</div>
+          <h2 style="margin:5px 0">Số dư của bạn</h2>
+          <div class="wallet-row"><span>✦ Điểm Linh Thú</span><strong id="walletPoints">180</strong></div>
+          <div class="wallet-row"><span>🎟️ Vé Triệu Hồi</span><strong id="walletTickets">12</strong></div>
+          <div class="wallet-row"><span>🧩 Tinh Hoa</span><strong id="walletEssence">0</strong></div>
+          <div class="wallet-row"><span>🧬 Linh Thú sở hữu</span><strong id="walletOwned">1/12</strong></div>
+
+          <div class="history">
+            <div class="section-title" style="font-size:14px">Lịch sử đổi thưởng</div>
+            <div id="rewardHistory"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-screen="garden"><span class="nav-icon">🌲</span><span>Vườn</span></button>
+    <button class="nav-btn" data-screen="summon"><span class="nav-icon">✨</span><span>Triệu hồi</span></button>
+    <button class="nav-btn" data-screen="collection"><span class="nav-icon">📖</span><span>Sưu tập</span></button>
+    <button class="nav-btn" data-screen="missions"><span class="nav-icon">📜</span><span>Nhiệm vụ</span></button>
+    <button class="nav-btn" data-screen="rewards"><span class="nav-icon">🎁</span><span>Đổi thưởng</span></button>
+  </nav>
+</div>
+
+<!-- PULL RESULT MODAL -->
+<div class="modal" id="pullModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><div class="eyebrow">Kết quả triệu hồi</div><h2 id="pullModalTitle">Linh Thú đã xuất hiện!</h2></div>
+      <button class="close-btn" data-close="pullModal">×</button>
+    </div>
+    <div class="pull-results" id="pullResults"></div>
+    <div class="notice" id="duplicateNotice" style="margin-top:14px"></div>
+    <button class="btn primary" style="width:100%;margin-top:14px" data-close="pullModal">Tiếp tục hành trình</button>
+  </div>
+</div>
+
+<!-- PET DETAIL MODAL -->
+<div class="modal" id="petModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><div class="eyebrow">Hồ sơ Linh Thú</div><h2 id="petModalTitle"></h2></div>
+      <button class="close-btn" data-close="petModal">×</button>
+    </div>
+    <div id="petModalBody"></div>
+  </div>
+</div>
+
+<!-- ARTICLE VERIFY MODAL -->
+<div class="modal" id="articleModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><div class="eyebrow">Nhiệm vụ đọc nội dung</div><h2>Tìm hiểu sản phẩm GAMA</h2></div>
+      <button class="close-btn" data-close="articleModal">×</button>
+    </div>
+    <div class="notice" style="margin:12px 0">Bản demo rút gọn còn <strong>8 giây</strong>. Khi triển khai thật: tối thiểu 30 giây và cuộn 80% trang.</div>
+    <div class="article-box" id="articleBox">
+      <h3>Khám phá câu chuyện sản phẩm</h3>
+      <p>GAMA Linh Thú biến hoạt động tìm hiểu thương hiệu thành một hành trình sưu tầm. Mỗi nhiệm vụ đều gắn với một hành động có giá trị như xem nội dung, quét mã, đánh giá, mua hàng hoặc nhập hóa đơn.</p>
+      <p>Người chơi nhận Vé Triệu Hồi để mở Linh Thú mới, nuôi dưỡng chúng trong Vườn và hoàn thành các bộ sưu tập. Hệ thống được thiết kế để mọi lượt triệu hồi đều có giá trị, kể cả khi nhận nhân vật trùng.</p>
+      <p>Linh Thú trùng được chuyển thành Mảnh và Tinh Hoa. Người chơi có thể dùng chúng để nâng sao hoặc đổi trực tiếp Linh Thú còn thiếu. Thanh bảo đảm giúp người chơi nhìn thấy con đường rõ ràng để hoàn thành bộ sưu tập.</p>
+      <p>Doanh nghiệp có thể tùy chỉnh banner, nhiệm vụ, nhân vật, phần thưởng và nội dung theo từng ngành. Dashboard ghi nhận lượt chơi, nhiệm vụ hoàn thành, dữ liệu sở thích, đổi thưởng và chuyển đổi.</p>
+      <p>Phần thưởng thật như voucher, quà dùng thử, miễn phí vận chuyển hoặc quyền lợi thành viên tạo cầu nối giữa trải nghiệm game và hành vi mua hàng.</p>
+      <p>Hãy tiếp tục cuộn xuống để hệ thống ghi nhận mức độ đọc nội dung. Đây là đoạn nội dung bổ sung nhằm mô phỏng điều kiện cuộn 80% trang trong chiến dịch thật.</p>
+      <p>Hoàn thành nhiệm vụ sẽ mở nút nhận thưởng trong mục Nhiệm vụ thương hiệu.</p>
+    </div>
+    <div style="margin-top:12px"><strong>Thời gian:</strong> <span class="timer" id="articleTimer">0/8 giây</span> · <strong>Đã cuộn:</strong> <span id="articleScroll">0%</span></div>
+    <div class="progress" style="margin-top:7px"><span id="articleProgress"></span></div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal" id="qrModal">
+  <div class="modal-box">
+    <div class="modal-head"><div><div class="eyebrow">Xác minh QR</div><h2>Quét mã sản phẩm</h2></div><button class="close-btn" data-close="qrModal">×</button></div>
+    <p class="sub">Nhập mã demo <strong>GAMA2026</strong> để mô phỏng việc quét QR hợp lệ.</p>
+    <input class="qr-input" id="qrInput" placeholder="Nhập mã QR">
+    <button class="btn mint" id="verifyQrBtn" style="width:100%;margin-top:10px">Xác minh mã</button>
+  </div>
+</div>
+
+<!-- INVOICE MODAL -->
+<div class="modal" id="invoiceModal">
+  <div class="modal-box">
+    <div class="modal-head"><div><div class="eyebrow">Xác minh giao dịch</div><h2>Nhập hóa đơn</h2></div><button class="close-btn" data-close="invoiceModal">×</button></div>
+    <p class="sub">Mã hóa đơn phải chưa sử dụng và giá trị tối thiểu 200.000 đồng.</p>
+    <input class="invoice-input" id="invoiceCode" placeholder="Mã hóa đơn, ví dụ HD2026">
+    <input class="invoice-input" id="invoiceAmount" type="number" placeholder="Giá trị hóa đơn">
+    <button class="btn primary" id="verifyInvoiceBtn" style="width:100%;margin-top:10px">Xác minh hóa đơn</button>
+  </div>
+</div>
+
+<!-- CONFIRM REWARD MODAL -->
+<div class="modal" id="redeemModal">
+  <div class="modal-box">
+    <div class="modal-head"><div><div class="eyebrow">Xác nhận đổi thưởng</div><h2 id="redeemTitle"></h2></div><button class="close-btn" data-close="redeemModal">×</button></div>
+    <div id="redeemBody"></div>
+    <button class="btn primary" id="confirmRedeemBtn" style="width:100%;margin-top:14px">Xác nhận đổi thưởng</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+const PETS = [
+  {id:"phong-tien",name:"Phong Tiên",element:"Phong",rarity:"common",body:"#6f55d9",accent:"#ffd65a",feature:"wing",skill:"Tăng 5% Xu nhận từ nhiệm vụ",set:"basic"},
+  {id:"thuy-mam",name:"Thủy Mầm",element:"Thủy",rarity:"common",body:"#54b7ee",accent:"#a9f2ff",feature:"fin",skill:"Giảm 1 Năng lượng khi chơi cùng",set:"basic"},
+  {id:"hoa-be",name:"Hỏa Bé",element:"Hỏa",rarity:"common",body:"#f06a54",accent:"#ffd260",feature:"horn",skill:"Tăng 5% kinh nghiệm huấn luyện",set:"basic"},
+  {id:"moc-nam",name:"Mộc Nấm",element:"Mộc",rarity:"common",body:"#6dc879",accent:"#ff8d87",feature:"mushroom",skill:"Tăng 5% độ thân thiết khi cho ăn",set:"basic"},
+  {id:"quang-tho",name:"Quang Thỏ",element:"Quang",rarity:"common",body:"#f4cf73",accent:"#fff5bc",feature:"ear",skill:"Tăng cơ hội nhận vật phẩm khám phá",set:"mystic"},
+  {id:"am-cau",name:"Ám Cầu",element:"Ám",rarity:"common",body:"#5e5873",accent:"#c8a7ff",feature:"spike",skill:"Giảm hao hụt Xu khi nâng cấp",set:"mystic"},
+  {id:"loi-mieu",name:"Lôi Miêu",element:"Lôi",rarity:"rare",body:"#9272e7",accent:"#ffe45e",feature:"cat",skill:"Có 10% nhận thêm 1 Vé từ nhiệm vụ tuần",set:"mystic"},
+  {id:"bang-ho",name:"Băng Hồ",element:"Băng",rarity:"rare",body:"#80d7e8",accent:"#efffff",feature:"fox",skill:"Giảm 15% Năng lượng khi khám phá",set:"mystic"},
+  {id:"moc-giap",name:"Mộc Giáp",element:"Mộc",rarity:"rare",body:"#4ea96c",accent:"#d7b76c",feature:"armor",skill:"Tăng 10% Xu từ Vườn",set:"mystic"},
+  {id:"tinh-linh-mong",name:"Tinh Linh Mộng",element:"Mộng",rarity:"epic",body:"#b880e9",accent:"#ffb7e6",feature:"crown",skill:"Có 15% nhân đôi Điểm Linh Thú",set:"legend"},
+  {id:"hac-anh",name:"Hắc Ảnh",element:"Ám",rarity:"epic",body:"#3e405a",accent:"#ef6f94",feature:"mask",skill:"Tăng tỷ lệ nhận Linh Thú chưa sở hữu",set:"legend"},
+  {id:"thai-duong-long",name:"Thái Dương Long",element:"Quang",rarity:"legendary",body:"#ef9d35",accent:"#fff06a",feature:"dragon",skill:"Mỗi 7 ngày nhận 1 Vé Triệu Hồi miễn phí",set:"legend"}
+];
+
+const RARITY = {
+  common:{label:"Thường",color:"#8ec8ff",weight:65,shards:10,essence:8,pointsNew:8},
+  rare:{label:"Hiếm",color:"#ff838b",weight:25,shards:25,essence:18,pointsNew:20},
+  epic:{label:"Sử Thi",color:"#b38bf4",weight:8,shards:60,essence:45,pointsNew:55},
+  legendary:{label:"Huyền Thoại",color:"#ffd45d",weight:2,shards:100,essence:90,pointsNew:120}
+};
+
+const SETS = [
+  {id:"basic",name:"Nguyên Tố Cơ Bản",desc:"Sưu tập đủ 4 Linh Thú cơ bản",need:["phong-tien","thuy-mam","hoa-be","moc-nam"],reward:{tickets:2,points:80}},
+  {id:"mystic",name:"Linh Thú Huyền Bí",desc:"Sưu tập đủ 4 Linh Thú huyền bí",need:["quang-tho","am-cau","loi-mieu","bang-ho"],reward:{tickets:3,points:120}},
+  {id:"legend",name:"Bộ Sức Mạnh Tối Thượng",desc:"Sưu tập 3 Linh Thú cấp cao",need:["tinh-linh-mong","hac-anh","thai-duong-long"],reward:{tickets:5,points:250}}
+];
+
+const REWARDS = [
+  {id:"ticket",icon:"🎟️",name:"1 Vé Triệu Hồi",desc:"Dùng cho mọi banner phổ thông.",cost:100,type:"digital"},
+  {id:"voucher10",icon:"🏷️",name:"Voucher 10%",desc:"Áp dụng cho đơn hàng từ 200.000 đồng.",cost:300,type:"voucher"},
+  {id:"shipping",icon:"🚚",name:"Miễn phí vận chuyển",desc:"Tối đa một lần mỗi tháng.",cost:400,type:"voucher"},
+  {id:"sample",icon:"🎁",name:"Quà dùng thử",desc:"Quà sản phẩm giới hạn theo số lượng.",cost:600,type:"physical"},
+  {id:"eventpet",icon:"🐲",name:"Linh Thú sự kiện",desc:"Mở trực tiếp một Linh Thú giới hạn.",cost:800,type:"pet"},
+  {id:"voucher100",icon:"💳",name:"Voucher 100.000đ",desc:"Dành cho tài khoản đã xác minh.",cost:1200,type:"voucher"}
+];
+
+const MISSIONS = [
+  {id:"checkin",tab:"daily",icon:"📅",title:"Điểm danh ngày",desc:"Đăng nhập mỗi ngày để nhận thưởng.",target:1,key:"checkin",reward:{coins:20}},
+  {id:"firstpull",tab:"daily",icon:"✨",title:"Triệu hồi đầu tiên",desc:"Thực hiện một lượt triệu hồi hôm nay.",target:1,key:"pullsToday",reward:{coins:15}},
+  {id:"pull3",tab:"daily",icon:"🎟️",title:"Triệu hồi 3 lần",desc:"Triệu hồi đủ 3 lần trong ngày.",target:3,key:"pullsToday",reward:{tickets:1}},
+  {id:"feed5",tab:"daily",icon:"🍎",title:"Cho ăn 5 lần",desc:"Cho Linh Thú ăn đủ 5 lần.",target:5,key:"feed",reward:{coins:30}},
+  {id:"play3",tab:"daily",icon:"🎾",title:"Chơi cùng Linh Thú",desc:"Tương tác hoặc chơi cùng Linh Thú 3 lần.",target:3,key:"play",reward:{energy:10}},
+  {id:"collect3",tab:"weekly",icon:"📖",title:"Nhà sưu tầm",desc:"Sở hữu ít nhất 3 Linh Thú khác nhau.",target:3,key:"ownedCount",reward:{tickets:2}},
+  {id:"feed20",tab:"weekly",icon:"🥣",title:"Người chăm sóc",desc:"Cho Linh Thú ăn 20 lần.",target:20,key:"feed",reward:{coins:100}},
+  {id:"explore5",tab:"weekly",icon:"🗺️",title:"Nhà khám phá",desc:"Thực hiện 5 lượt khám phá.",target:5,key:"explore",reward:{tickets:1}},
+  {id:"pullfirst",tab:"achievement",icon:"🏆",title:"Triệu hồi đầu tiên",desc:"Triệu hồi Linh Thú lần đầu.",target:1,key:"totalPulls",reward:{points:30}},
+  {id:"collector12",tab:"achievement",icon:"👑",title:"Nhà sưu tầm chuyên nghiệp",desc:"Sưu tập đủ 12 Linh Thú.",target:12,key:"ownedCount",reward:{points:300,tickets:5}},
+  {id:"level5",tab:"achievement",icon:"⭐",title:"Đạt Level 5",desc:"Nâng một Linh Thú lên cấp 5.",target:5,key:"maxLevel",reward:{points:80}},
+  {id:"article",tab:"brand",icon:"📄",title:"Tìm hiểu sản phẩm",desc:"Đọc bài tối thiểu 30 giây và cuộn 80% trang.",target:1,key:"articleVerified",reward:{tickets:1,points:20},action:"article"},
+  {id:"qr",tab:"brand",icon:"🔳",title:"Quét mã trên bao bì",desc:"Quét một mã QR hợp lệ của chiến dịch.",target:1,key:"qrVerified",reward:{tickets:2,points:30},action:"qr"},
+  {id:"invoice",tab:"brand",icon:"🧾",title:"Nhập hóa đơn",desc:"Xác minh hóa đơn từ 200.000 đồng.",target:1,key:"invoiceVerified",reward:{tickets:3,points:80},action:"invoice"},
+  {id:"preference",tab:"brand",icon:"❤️",title:"Chọn Linh Thú yêu thích",desc:"Chọn một Linh Thú mục tiêu để cá nhân hóa banner.",target:1,key:"targetSelected",reward:{coins:30},action:"target"}
+];
+
+const DEFAULT_STATE = {
+  tickets:12,coins:100,energy:50,points:180,essence:0,
+  activePet:"phong-tien",banner:"standard",filter:"all",missionTab:"daily",
+  owned:{
+    "phong-tien":{count:1,level:1,xp:0,friend:5,stars:1}
+  },
+  shards:{},
+  pity:{rare:0,newPet:0,legendary:0,target:0},
+  targetPet:"",
+  counters:{checkin:0,pullsToday:0,totalPulls:0,feed:0,play:0,train:0,explore:0,articleVerified:0,qrVerified:0,invoiceVerified:0,targetSelected:0},
+  claimedMissions:{},claimedSets:{},rewardHistory:[],usedInvoices:[],
+  checkedIn:false
+};
+
+let state = loadState();
+let currentRewardId = null;
+let articleSeconds = 0;
+let articleTimerHandle = null;
+let articleScrolled = 0;
+
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem("gamaLinhThuState")||"null");
+    return saved ? {...structuredClone(DEFAULT_STATE),...saved,counters:{...DEFAULT_STATE.counters,...(saved.counters||{})},pity:{...DEFAULT_STATE.pity,...(saved.pity||{})}} : structuredClone(DEFAULT_STATE);
+  }catch(e){ return structuredClone(DEFAULT_STATE); }
+}
+function saveState(){ localStorage.setItem("gamaLinhThuState",JSON.stringify(state)); }
+function petById(id){return PETS.find(p=>p.id===id)}
+function ownedIds(){return Object.keys(state.owned)}
+function ownedCount(){return ownedIds().length}
+function maxLevel(){return Math.max(...Object.values(state.owned).map(x=>x.level||1),1)}
+function rarityRank(r){return {common:1,rare:2,epic:3,legendary:4}[r]}
+function rewardText(reward){
+  const parts=[];
+  if(reward.coins)parts.push(`🪙 ${reward.coins}`);
+  if(reward.tickets)parts.push(`🎟️ ${reward.tickets}`);
+  if(reward.energy)parts.push(`⚡ ${reward.energy}`);
+  if(reward.points)parts.push(`✦ ${reward.points}`);
+  return parts.join(" · ");
+}
+function addReward(reward){
+  if(reward.coins)state.coins+=reward.coins;
+  if(reward.tickets)state.tickets+=reward.tickets;
+  if(reward.energy)state.energy=Math.min(100,state.energy+reward.energy);
+  if(reward.points)state.points+=reward.points;
+}
+function toast(text){
+  $("#toast").textContent=text;
+  $("#toast").classList.add("show");
+  clearTimeout(toast.t);
+  toast.t=setTimeout(()=>$("#toast").classList.remove("show"),2500);
+}
+function openModal(id){$("#"+id).classList.add("show")}
+function closeModal(id){$("#"+id).classList.remove("show")}
+$$("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+
+function petSVG(pet,locked=false,mini=false){
+  const uid=Math.random().toString(36).slice(2,8);
+  const body=locked?"#7e7a73":pet.body, accent=locked?"#aaa59c":pet.accent;
+  const feature = locked ? "locked" : pet.feature;
+  const extra = {
+    wing:`<path d="M62 118 Q16 91 20 145 Q43 160 75 144Z" fill="${accent}" stroke="#3d2a1c" stroke-width="7"/><path d="M198 118 Q244 91 240 145 Q217 160 185 144Z" fill="${accent}" stroke="#3d2a1c" stroke-width="7"/>`,
+    fin:`<path d="M60 128 Q22 110 24 151 Q46 161 69 146Z" fill="${accent}" stroke="#3d2a1c" stroke-width="7"/><path d="M200 128 Q238 110 236 151 Q214 161 191 146Z" fill="${accent}" stroke="#3d2a1c" stroke-width="7"/>`,
+    horn:`<path d="M96 60 L108 12 L128 62Z" fill="${accent}" stroke="#3d2a1c" stroke-width="7"/><path d="M164 62 L184 13 L196 66Z" fill="${accent}" stroke="#3d2a1c" stroke-width="7"/>`,
+    mushroom:`<path d="M72 78 Q130 18 188 78 Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><circle cx="105" cy="58" r="10" fill="#fff"/><circle cx="154" cy="50" r="9" fill="#fff"/>`,
+    ear:`<path d="M79 75 Q56 4 104 58Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M181 75 Q204 4 156 58Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`,
+    spike:`<path d="M75 72 L66 28 L103 57 L130 17 L151 58 L192 30 L185 77Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`,
+    cat:`<path d="M76 77 L62 30 L108 61Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M184 77 L198 30 L152 61Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M109 50 L122 20 L134 51 L149 15 L161 51" fill="none" stroke="#ffe45e" stroke-width="8"/>`,
+    fox:`<path d="M75 76 L51 25 L110 61Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M185 76 L209 25 L150 61Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M205 154 Q254 137 234 192 Q206 200 188 174Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`,
+    armor:`<path d="M70 93 Q130 40 190 93 L178 137 Q130 110 82 137Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><rect x="93" y="46" width="74" height="28" rx="12" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`,
+    crown:`<path d="M79 69 L68 18 L111 45 L130 8 L153 45 L194 18 L181 71Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`,
+    mask:`<path d="M66 101 Q130 57 194 101 L180 137 Q130 116 80 137Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`,
+    dragon:`<path d="M85 70 L74 17 L111 49 L130 5 L149 49 L188 15 L177 72Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M57 122 Q10 82 19 151 Q39 165 72 145Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M203 122 Q250 82 241 151 Q221 165 188 145Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`,
+    locked:`<path d="M76 76 L60 30 L106 60Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/><path d="M184 76 L200 30 L154 60Z" fill="${accent}" stroke="#3d2a1c" stroke-width="8"/>`
+  }[feature]||"";
+  const question=locked?`<text x="130" y="145" text-anchor="middle" font-size="62" font-weight="1000" fill="#fff">?</text>`:"";
+  const face=locked?"":`<ellipse cx="102" cy="124" rx="11" ry="14" fill="#2e2018"/><ellipse cx="158" cy="124" rx="11" ry="14" fill="#2e2018"/><circle cx="98" cy="120" r="4" fill="#fff"/><circle cx="154" cy="120" r="4" fill="#fff"/><path d="M116 147 Q130 160 144 147" fill="none" stroke="#3d2a1c" stroke-width="7" stroke-linecap="round"/><path d="M126 139 L134 139 L130 145Z" fill="${accent}"/>`;
+  return `<svg viewBox="0 0 260 240" style="width:${mini?110:230}px;max-width:100%;height:auto;display:block">
+    <defs><radialGradient id="b${uid}" cx="35%" cy="22%"><stop offset="0" stop-color="#fff" stop-opacity=".48"/><stop offset=".42" stop-color="${body}"/><stop offset="1" stop-color="${body}"/></radialGradient></defs>
+    <ellipse cx="130" cy="218" rx="78" ry="16" fill="#3d2a1c" opacity=".18"/>
+    ${extra}
+    <path d="M65 125 Q68 66 130 59 Q194 65 196 125 L190 178 Q177 208 130 210 Q83 208 70 178Z" fill="url(#b${uid})" stroke="#3d2a1c" stroke-width="9"/>
+    <circle cx="69" cy="136" r="13" fill="${body}" stroke="#3d2a1c" stroke-width="7"/>
+    <circle cx="191" cy="136" r="13" fill="${body}" stroke="#3d2a1c" stroke-width="7"/>
+    <path d="M85 178 Q130 199 175 178" fill="none" stroke="${accent}" stroke-width="15" stroke-linecap="round" opacity=".8"/>
+    ${face}${question}
+    ${locked?`<circle cx="130" cy="130" r="72" fill="#000" opacity=".18"/>`:""}
+  </svg>`;
+}
+
+function renderAll(){
+  saveState();
+  renderTop();
+  renderGarden();
+  renderSummon();
+  renderCollection();
+  renderMissions();
+  renderRewards();
+}
+function renderTop(){
+  $("#ticketsTop").textContent=state.tickets;
+  $("#coinsTop").textContent=state.coins;
+  $("#energyTop").textContent=state.energy;
+  $("#pointsTop").textContent=state.points;
+}
+function renderGarden(){
+  const pet=petById(state.activePet)||PETS[0], data=state.owned[pet.id];
+  $("#gardenPet").innerHTML=petSVG(pet,false,false);
+  $("#gardenPetName").textContent=`${pet.name} · Lv.${data.level}`;
+  $("#activePetTitle").textContent=pet.name;
+  $("#activePetMeta").textContent=`Hệ ${pet.element} · ${RARITY[pet.rarity].label} · Kỹ năng: ${pet.skill}`;
+  $("#xpText").textContent=`${data.xp}/100`;
+  $("#xpBar").style.width=data.xp+"%";
+  $("#friendText").textContent=`${data.friend}/100`;
+  $("#friendBar").style.width=data.friend+"%";
+  const ids=ownedIds().slice(0,4);
+  $("#gardenSlots").innerHTML=Array.from({length:4},(_,i)=>{
+    const id=ids[i];
+    if(!id)return `<div class="pet-slot"><span style="font-size:26px">＋</span><span class="mini-label">Ô trống</span></div>`;
+    const p=petById(id);
+    return `<button class="pet-slot ${id===state.activePet?"active":""}" data-pet="${id}">${petSVG(p,false,true)}<span class="mini-label">${p.name}</span></button>`;
+  }).join("");
+  $$(".pet-slot[data-pet]").forEach(b=>b.onclick=()=>{state.activePet=b.dataset.pet;renderAll();toast(`Đã đưa ${petById(state.activePet).name} vào Vườn.`)});
+  $("#checkinBtn").disabled=state.checkedIn;
+  $("#checkinBtn").textContent=state.checkedIn?"Đã nhận hôm nay":"Nhận điểm danh";
+}
+function gardenAction(action){
+  const costs={feed:5,play:5,train:10,explore:15};
+  const cost=costs[action];
+  if(state.energy<cost){toast("Không đủ Năng lượng.");return}
+  const data=state.owned[state.activePet];
+  state.energy-=cost;
+  if(action==="feed"){data.xp+=12;data.friend=Math.min(100,data.friend+4);state.counters.feed++;state.coins+=5;toast("🍎 Linh Thú ăn rất ngon! +12 XP, +4 thân thiết");}
+  if(action==="play"){data.friend=Math.min(100,data.friend+7);state.counters.play++;state.coins+=8;toast("🎾 Linh Thú rất vui! +7 thân thiết, +8 Xu");}
+  if(action==="train"){data.xp+=28;state.counters.train++;state.coins=Math.max(0,state.coins-5);toast("🏋️ Huấn luyện hoàn tất! +28 XP");}
+  if(action==="explore"){state.counters.explore++;const gain=25+Math.floor(Math.random()*30);state.coins+=gain;if(Math.random()<.22){state.essence+=10;toast(`🗺️ Khám phá thành công! +${gain} Xu, +10 Tinh Hoa`)}else toast(`🗺️ Khám phá thành công! +${gain} Xu`)}
+  while(data.xp>=100){data.xp-=100;data.level++;state.points+=10;toast(`⭐ ${petById(state.activePet).name} đã lên Level ${data.level}!`)}
+  renderAll();
+}
+$$(".action-btn").forEach(b=>b.onclick=()=>gardenAction(b.dataset.action));
+$("#gardenPetWrap").onclick=()=>{state.counters.play++;const d=state.owned[state.activePet];d.friend=Math.min(100,d.friend+1);renderAll();toast("💛 Linh Thú phản ứng với bạn. +1 thân thiết");};
+$("#checkinBtn").onclick=()=>{if(state.checkedIn)return;state.checkedIn=true;state.counters.checkin=1;state.tickets+=1;state.coins+=20;renderAll();toast("Điểm danh thành công: +1 Vé, +20 Xu");};
+
+function renderSummon(){
+  const bannerNames={standard:"Banner Ánh Hùng",event:"Lễ Hội Hỏa Long",personal:"Banner Cá Nhân Hóa"};
+  $("#bannerTitle").textContent=bannerNames[state.banner];
+  $$(".banner-item").forEach(b=>b.classList.toggle("active",b.dataset.banner===state.banner));
+  const missing=PETS.filter(p=>!state.owned[p.id]);
+  $("#targetSelect").innerHTML=`<option value="">Chưa chọn mục tiêu</option>`+missing.map(p=>`<option value="${p.id}" ${state.targetPet===p.id?"selected":""}>${p.name} · ${RARITY[p.rarity].label}</option>`).join("");
+  const setProgress=(id,val,max)=>{$(id+"Text").textContent=`${val}/${max}`;$(id+"Bar").style.width=Math.min(100,val/max*100)+"%"};
+  setProgress("#rarePity",state.pity.rare,10);
+  setProgress("#newPity",state.pity.newPet,30);
+  setProgress("#legendPity",state.pity.legendary,80);
+  setProgress("#targetPity",state.pity.target,30);
+}
+$$(".banner-item").forEach(b=>b.onclick=()=>{state.banner=b.dataset.banner;renderAll()});
+$("#targetSelect").onchange=e=>{state.targetPet=e.target.value;state.pity.target=0;state.counters.targetSelected=state.targetPet?1:0;renderAll();toast(state.targetPet?`Đã chọn mục tiêu: ${petById(state.targetPet).name}`:"Đã bỏ mục tiêu")};
+
+function weightedPet(forceMinRarity=null){
+  let pool=PETS.slice();
+  if(state.banner==="event")pool=pool.map(p=>({...p,_bonus:p.element==="Hỏa"?2.5:1}));
+  else if(state.banner==="personal"&&state.targetPet)pool=pool.map(p=>({...p,_bonus:p.id===state.targetPet?4:1}));
+  else pool=pool.map(p=>({...p,_bonus:1}));
+  if(forceMinRarity)pool=pool.filter(p=>rarityRank(p.rarity)>=rarityRank(forceMinRarity));
+  const weights=pool.map(p=>RARITY[p.rarity].weight*p._bonus);
+  let r=Math.random()*weights.reduce((a,b)=>a+b,0);
+  for(let i=0;i<pool.length;i++){r-=weights[i];if(r<=0)return petById(pool[i].id)}
+  return petById(pool[0].id);
+}
+function pickMissing(minRarity=null){
+  let miss=PETS.filter(p=>!state.owned[p.id]);
+  if(minRarity)miss=miss.filter(p=>rarityRank(p.rarity)>=rarityRank(minRarity));
+  return miss.length?miss[Math.floor(Math.random()*miss.length)]:weightedPet(minRarity);
+}
+function executePull(indexInBatch=0,batchSize=1){
+  let forced=null;
+  if(state.targetPet && !state.owned[state.targetPet] && state.pity.target>=29)forced=petById(state.targetPet);
+  else if(state.pity.legendary>=79)forced=weightedPet("legendary");
+  else if(state.pity.newPet>=29)forced=pickMissing();
+  else if(batchSize===10 && indexInBatch===9)forced=weightedPet("rare");
+  else if(state.pity.rare>=9)forced=weightedPet("rare");
+
+  let pet=forced;
+  if(!pet && state.targetPet && !state.owned[state.targetPet] && Math.random()<.07)pet=petById(state.targetPet);
+  if(!pet)pet=weightedPet();
+
+  const isNew=!state.owned[pet.id];
+  state.counters.totalPulls++;
+  state.counters.pullsToday++;
+  state.pity.rare++;
+  state.pity.newPet++;
+  state.pity.legendary++;
+  if(state.targetPet&&!state.owned[state.targetPet])state.pity.target++;
+
+  if(rarityRank(pet.rarity)>=2)state.pity.rare=0;
+  if(pet.rarity==="legendary")state.pity.legendary=0;
+  if(isNew)state.pity.newPet=0;
+  if(pet.id===state.targetPet)state.pity.target=0;
+
+  let duplicateReward=null;
+  if(isNew){
+    state.owned[pet.id]={count:1,level:1,xp:0,friend:0,stars:1};
+    state.points+=RARITY[pet.rarity].pointsNew;
+  }else{
+    state.owned[pet.id].count++;
+    state.shards[pet.id]=(state.shards[pet.id]||0)+RARITY[pet.rarity].shards;
+    state.essence+=RARITY[pet.rarity].essence;
+    state.points+=Math.ceil(RARITY[pet.rarity].pointsNew/2);
+    duplicateReward={shards:RARITY[pet.rarity].shards,essence:RARITY[pet.rarity].essence};
+  }
+  return {pet,isNew,duplicateReward};
+}
+function summon(count){
+  const cost=count===10?9:1;
+  if(state.tickets<cost){toast("Không đủ Vé Triệu Hồi. Hãy làm nhiệm vụ hoặc đổi thưởng.");return}
+  state.tickets-=cost;
+  $("#portal").classList.remove("summoning");void $("#portal").offsetWidth;$("#portal").classList.add("summoning");
+  setTimeout(()=>{
+    const results=[];
+    for(let i=0;i<count;i++)results.push(executePull(i,count));
+    showPullResults(results);
+    renderAll();
+  },800);
+}
+function showPullResults(results){
+  $("#pullModalTitle").textContent=results.length===1?"Linh Thú đã xuất hiện!":"Kết quả 10 lần triệu hồi";
+  $("#pullResults").innerHTML=results.map(r=>`
+    <div class="result-card" style="background:linear-gradient(180deg,${RARITY[r.pet.rarity].color},#fff 44%)">
+      ${r.isNew?'<span class="new-tag">MỚI</span>':''}
+      ${petSVG(r.pet,false,true)}
+      <h4>${r.pet.name}</h4>
+      <small>${RARITY[r.pet.rarity].label}${r.isNew?" · Đã thêm vào bộ":` · +${r.duplicateReward.shards} Mảnh`}</small>
+    </div>`).join("");
+  const duplicates=results.filter(r=>!r.isNew);
+  $("#duplicateNotice").innerHTML=duplicates.length
+    ? `<strong>${duplicates.length} Linh Thú trùng đã được chuyển đổi.</strong><br>Bạn nhận Mảnh Linh Thú, Tinh Hoa và Điểm Linh Thú. Không có lượt nào bị mất giá trị.`
+    : `<strong>Tuyệt vời!</strong> Tất cả Linh Thú trong lượt này đều là nhân vật mới.`;
+  openModal("pullModal");
+}
+$("#summonOneBtn").onclick=()=>summon(1);
+$("#summonTenBtn").onclick=()=>summon(10);
+
+function renderCollection(){
+  const pct=ownedCount()/PETS.length*100;
+  $("#collectionCount").textContent=`${ownedCount()}/${PETS.length} Linh Thú`;
+  $("#collectionProgress").style.width=pct+"%";
+  $("#essenceCount").textContent=`${state.essence} Tinh Hoa`;
+  $$(".filters .chip").forEach(b=>b.classList.toggle("active",b.dataset.filter===state.filter));
+
+  $("#collectionSets").innerHTML=SETS.map(s=>{
+    const got=s.need.filter(id=>state.owned[id]).length;
+    const complete=got===s.need.length,claimed=state.claimedSets[s.id];
+    return `<div class="card set-card">
+      <div class="set-top"><div><h3>${s.name}</h3><p>${s.desc}</p></div><strong>${got}/${s.need.length}</strong></div>
+      <div class="progress"><span style="width:${got/s.need.length*100}%;background:linear-gradient(90deg,#f2b52f,#ff7b75)"></span></div>
+      <button class="btn small ${complete&&!claimed?"mint":""}" style="width:100%;margin-top:10px" data-set="${s.id}" ${!complete||claimed?"disabled":""}>${claimed?"Đã nhận":`Nhận ${rewardText(s.reward)}`}</button>
+    </div>`;
+  }).join("");
+  $$("[data-set]").forEach(b=>b.onclick=()=>claimSet(b.dataset.set));
+
+  let list=PETS;
+  if(state.filter==="missing")list=PETS.filter(p=>!state.owned[p.id]);
+  else if(state.filter!=="all")list=PETS.filter(p=>p.rarity===state.filter);
+  $("#collectionGrid").innerHTML=list.map(p=>{
+    const own=state.owned[p.id],locked=!own,targeted=state.targetPet===p.id;
+    return `<div class="pet-card ${locked?"locked":"owned"} ${targeted?"targeted":""}">
+      <div class="pet-art">${petSVG(p,locked,false)}</div>
+      <h3>${locked?"Linh Thú ẩn":p.name}</h3>
+      <div class="pet-meta"><span class="badge r-${p.rarity}">${RARITY[p.rarity].label}</span><span class="badge">${locked?"???":p.element}</span></div>
+      <div class="level">${own?`Lv.${own.level} · ${own.stars}★ · ${state.shards[p.id]||0} Mảnh`:`Cần 180 Tinh Hoa hoặc đạt mốc bảo đảm`}</div>
+      <div class="pet-card-actions">
+        ${own?`<button class="btn small blue" data-use="${p.id}">Đưa vào Vườn</button>`:`<button class="btn small gold" data-target="${p.id}">${targeted?"Đang theo đuổi":"Chọn mục tiêu"}</button>`}
+        <button class="btn small" data-detail="${p.id}">Chi tiết</button>
+      </div>
+    </div>`;
+  }).join("");
+  $$("[data-use]").forEach(b=>b.onclick=()=>{state.activePet=b.dataset.use;switchScreen("garden");renderAll();toast(`Đã đưa ${petById(state.activePet).name} vào Vườn`)});
+  $$("[data-target]").forEach(b=>b.onclick=()=>{state.targetPet=b.dataset.target;state.pity.target=0;state.counters.targetSelected=1;renderAll();toast(`Đang theo đuổi ${petById(state.targetPet).name}`)});
+  $$("[data-detail]").forEach(b=>b.onclick=()=>showPetDetail(b.dataset.detail));
+}
+$$(".filters .chip").forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;renderAll()});
+function claimSet(id){
+  const s=SETS.find(x=>x.id===id);if(!s)return;
+  const complete=s.need.every(pid=>state.owned[pid]);
+  if(!complete||state.claimedSets[id])return;
+  state.claimedSets[id]=true;addReward(s.reward);renderAll();toast(`Hoàn thành ${s.name}: ${rewardText(s.reward)}`);
+}
+function showPetDetail(id){
+  const p=petById(id),own=state.owned[id],locked=!own;
+  $("#petModalTitle").textContent=locked?`Cách nhận ${p.name}`:p.name;
+  $("#petModalBody").innerHTML=`
+    <div style="display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:center;margin-top:13px">
+      <div style="display:grid;place-items:center;border:3px solid var(--line);border-radius:18px;background:${RARITY[p.rarity].color}55">${petSVG(p,locked,false)}</div>
+      <div>
+        <div class="pet-meta" style="justify-content:flex-start"><span class="badge r-${p.rarity}">${RARITY[p.rarity].label}</span><span class="badge">Hệ ${p.element}</span></div>
+        <p class="sub"><strong>Kỹ năng:</strong> ${p.skill}</p>
+        ${own?`
+          <p class="sub">Level ${own.level} · ${own.stars} sao · ${state.shards[p.id]||0} Mảnh</p>
+          <button class="btn blue" id="modalUsePet">Đưa vào Vườn</button>
+        `:`
+          <div class="notice">
+            <strong>Bạn chưa sở hữu Linh Thú này.</strong><br>
+            Có thể nhận qua Banner ${p.element}, chọn làm Linh Thú mục tiêu, đạt mốc bảo đảm hoặc đổi bằng 180 Tinh Hoa.
+          </div>
+          <div class="progress" style="margin-top:10px"><span style="width:${Math.min(100,state.essence/180*100)}%"></span></div>
+          <div class="sub" style="margin:5px 0 10px">${state.essence}/180 Tinh Hoa</div>
+          <button class="btn gold" id="modalTargetPet">${state.targetPet===p.id?"Đang theo đuổi":"Chọn làm mục tiêu"}</button>
+          <button class="btn mint" id="exchangePetBtn" ${state.essence<180?"disabled":""}>Đổi trực tiếp 180 Tinh Hoa</button>
+        `}
+      </div>
+    </div>`;
+  openModal("petModal");
+  if($("#modalUsePet"))$("#modalUsePet").onclick=()=>{state.activePet=id;closeModal("petModal");switchScreen("garden");renderAll()};
+  if($("#modalTargetPet"))$("#modalTargetPet").onclick=()=>{state.targetPet=id;state.pity.target=0;state.counters.targetSelected=1;closeModal("petModal");renderAll();toast(`Đang theo đuổi ${p.name}`)};
+  if($("#exchangePetBtn"))$("#exchangePetBtn").onclick=()=>exchangePet(id);
+  $("#missingGuide").innerHTML=locked?`<strong>Bạn còn thiếu ${p.name}.</strong>Có thể nhận bằng Banner ${p.element}, đổi 180 Tinh Hoa, chọn làm Linh Thú mục tiêu hoặc đạt mốc bảo đảm sau ${Math.max(0,30-state.pity.newPet)} lượt nữa.`:"<strong>Đã sở hữu.</strong>Bạn có thể tiếp tục triệu hồi để nhận Mảnh nâng sao.";
+}
+function exchangePet(id){
+  if(state.essence<180||state.owned[id])return;
+  state.essence-=180;state.owned[id]={count:1,level:1,xp:0,friend:0,stars:1};state.points+=RARITY[petById(id).rarity].pointsNew;
+  closeModal("petModal");renderAll();toast(`Đã đổi trực tiếp ${petById(id).name}. Bộ sưu tập đã được cập nhật.`);
+}
+
+function getCounter(key){
+  if(key==="ownedCount")return ownedCount();
+  if(key==="maxLevel")return maxLevel();
+  return state.counters[key]||0;
+}
+function renderMissions(){
+  $$(".mission-tabs .chip").forEach(b=>b.classList.toggle("active",b.dataset.missionTab===state.missionTab));
+  const list=MISSIONS.filter(m=>m.tab===state.missionTab);
+  $("#missionList").innerHTML=list.map(m=>{
+    const progress=Math.min(m.target,getCounter(m.key)),ready=progress>=m.target,claimed=state.claimedMissions[m.id];
+    const actionLabel=claimed?"Đã nhận":ready?"Nhận thưởng":m.action?"Thực hiện":"Chưa hoàn thành";
+    return `<div class="card mission-card">
+      <div class="mission-icon">${m.icon}</div>
+      <div>
+        <div class="mission-title">${m.title}</div>
+        <div class="mission-desc">${m.desc}</div>
+        <div class="progress"><span style="width:${progress/m.target*100}%;background:${ready?"var(--mint)":"linear-gradient(90deg,var(--coral),var(--orange))"}"></span></div>
+        <div class="mission-reward"><span class="reward-mini">${progress}/${m.target}</span><span class="reward-mini">Thưởng: ${rewardText(m.reward)}</span></div>
+      </div>
+      <button class="btn ${ready&&!claimed?"mint":m.action&&!claimed?"primary":""} mission-action" data-mission="${m.id}" ${claimed||(!ready&&!m.action)?"disabled":""}>${actionLabel}</button>
+    </div>`;
+  }).join("");
+  $$("[data-mission]").forEach(b=>b.onclick=()=>handleMission(b.dataset.mission));
+}
+$$(".mission-tabs .chip").forEach(b=>b.onclick=()=>{state.missionTab=b.dataset.missionTab;renderAll()});
+function handleMission(id){
+  const m=MISSIONS.find(x=>x.id===id);if(!m)return;
+  const ready=getCounter(m.key)>=m.target;
+  if(ready){claimMission(id);return}
+  if(m.action==="article"){startArticleMission()}
+  if(m.action==="qr"){openModal("qrModal")}
+  if(m.action==="invoice"){openModal("invoiceModal")}
+  if(m.action==="target"){switchScreen("summon");toast("Hãy chọn Linh Thú mục tiêu trong mục Triệu hồi.")}
+}
+function claimMission(id){
+  const m=MISSIONS.find(x=>x.id===id);if(!m||state.claimedMissions[id]||getCounter(m.key)<m.target)return;
+  state.claimedMissions[id]=true;addReward(m.reward);renderAll();toast(`Đã nhận thưởng: ${rewardText(m.reward)}`);
+}
+function startArticleMission(){
+  articleSeconds=0;articleScrolled=0;$("#articleTimer").textContent="0/8 giây";$("#articleScroll").textContent="0%";$("#articleProgress").style.width="0%";$("#articleBox").scrollTop=0;
+  clearInterval(articleTimerHandle);
+  articleTimerHandle=setInterval(()=>{
+    articleSeconds=Math.min(8,articleSeconds+1);
+    $("#articleTimer").textContent=`${articleSeconds}/8 giây`;
+    updateArticleProgress();
+    if(articleSeconds>=8&&articleScrolled>=80)completeArticleVerification();
+  },1000);
+  openModal("articleModal");
+}
+$("#articleBox").onscroll=e=>{
+  const el=e.currentTarget;
+  articleScrolled=Math.round(el.scrollTop/(el.scrollHeight-el.clientHeight)*100)||0;
+  $("#articleScroll").textContent=articleScrolled+"%";
+  updateArticleProgress();
+  if(articleSeconds>=8&&articleScrolled>=80)completeArticleVerification();
+};
+function updateArticleProgress(){
+  const pct=Math.min(100,(articleSeconds/8*50)+(Math.min(100,articleScrolled)/100*50));
+  $("#articleProgress").style.width=pct+"%";
+}
+function completeArticleVerification(){
+  if(state.counters.articleVerified)return;
+  state.counters.articleVerified=1;clearInterval(articleTimerHandle);closeModal("articleModal");renderAll();toast("Nội dung đã được xác minh. Nút Nhận thưởng đã mở.");
+}
+$("#verifyQrBtn").onclick=()=>{
+  if($("#qrInput").value.trim().toUpperCase()!=="GAMA2026"){toast("Mã QR không hợp lệ.");return}
+  state.counters.qrVerified=1;closeModal("qrModal");renderAll();toast("QR hợp lệ. Nút Nhận thưởng đã mở.");
+};
+$("#verifyInvoiceBtn").onclick=()=>{
+  const code=$("#invoiceCode").value.trim().toUpperCase(),amount=Number($("#invoiceAmount").value);
+  if(!code||amount<200000){toast("Hóa đơn chưa đạt điều kiện tối thiểu.");return}
+  if(state.usedInvoices.includes(code)){toast("Hóa đơn này đã được sử dụng.");return}
+  state.usedInvoices.push(code);state.counters.invoiceVerified=1;closeModal("invoiceModal");renderAll();toast("Hóa đơn hợp lệ. Nút Nhận thưởng đã mở.");
+};
+
+function renderRewards(){
+  $("#rewardGrid").innerHTML=REWARDS.map(r=>`
+    <div class="card reward-card">
+      <div class="reward-icon">${r.icon}</div>
+      <h3>${r.name}</h3>
+      <p>${r.desc}</p>
+      <div class="cost">✦ ${r.cost} Điểm Linh Thú</div>
+      <button class="btn purple" style="width:100%" data-reward="${r.id}" ${state.points<r.cost?"disabled":""}>Đổi thưởng</button>
+    </div>`).join("");
+  $$("[data-reward]").forEach(b=>b.onclick=()=>prepareRedeem(b.dataset.reward));
+  $("#walletPoints").textContent=state.points;
+  $("#walletTickets").textContent=state.tickets;
+  $("#walletEssence").textContent=state.essence;
+  $("#walletOwned").textContent=`${ownedCount()}/${PETS.length}`;
+  $("#rewardHistory").innerHTML=state.rewardHistory.length?state.rewardHistory.slice(0,6).map(h=>`<div class="history-item"><strong>${h.name}</strong><br><span class="code">${h.code}</span></div>`).join(""):`<div class="sub">Chưa có lượt đổi thưởng.</div>`;
+}
+function prepareRedeem(id){
+  const r=REWARDS.find(x=>x.id===id);if(!r)return;
+  currentRewardId=id;$("#redeemTitle").textContent=r.name;
+  $("#redeemBody").innerHTML=`<div style="text-align:center"><div style="font-size:70px">${r.icon}</div><p>${r.desc}</p><div class="notice"><strong>Chi phí:</strong> ${r.cost} Điểm Linh Thú<br><strong>Số dư sau khi đổi:</strong> ${state.points-r.cost} điểm</div></div>`;
+  openModal("redeemModal");
+}
+$("#confirmRedeemBtn").onclick=()=>{
+  const r=REWARDS.find(x=>x.id===currentRewardId);if(!r||state.points<r.cost)return;
+  state.points-=r.cost;
+  if(r.id==="ticket")state.tickets+=1;
+  if(r.id==="eventpet"){
+    const missing=PETS.filter(p=>!state.owned[p.id]);
+    if(missing.length){const p=missing.find(x=>x.rarity!=="legendary")||missing[0];state.owned[p.id]={count:1,level:1,xp:0,friend:0,stars:1}}
+  }
+  const code="GAMA-"+Math.random().toString(36).slice(2,8).toUpperCase();
+  state.rewardHistory.unshift({name:r.name,code});
+  closeModal("redeemModal");renderAll();toast(`Đổi thưởng thành công. Mã: ${code}`);
+};
+
+function switchScreen(name){
+  $$(".screen").forEach(s=>s.classList.remove("active"));
+  $("#"+name+"Screen").classList.add("active");
+  $$(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$$(".nav-btn").forEach(b=>b.onclick=()=>switchScreen(b.dataset.screen));
+$("#resetBtn").onclick=()=>{
+  if(confirm("Khởi động lại toàn bộ dữ liệu bản demo?")){
+    localStorage.removeItem("gamaLinhThuState");state=structuredClone(DEFAULT_STATE);renderAll();switchScreen("garden");toast("Đã khởi động lại bản demo.");
+  }
+};
+
+renderAll();
+</script>
+</body>
+</html>
