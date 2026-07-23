@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGMA — Nền tảng cho tăng trưởng và phát triển bền vững</title>
+<meta name="description" content="MAGMA kết nối GAMA và MATA thành hệ sinh thái tăng trưởng, marketing và vận hành tích hợp AI dành cho doanh nghiệp thương mại.">
+<style>
+:root{
+  --bg:#070707;
+  --bg-soft:#0d0d0f;
+  --surface:#121214;
+  --surface-2:#18181b;
+  --red:#ef2b2d;
+  --red-dark:#9d1015;
+  --red-soft:#ff5b5e;
+  --text:#f6f6f6;
+  --muted:#aaaab1;
+  --line:#29292e;
+  --success:#7ee2a8;
+  --radius:24px;
+  --shadow:0 24px 80px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 82% 5%,rgba(239,43,45,.16),transparent 26%),
+    linear-gradient(180deg,#050505 0%,#0b0b0c 55%,#050505 100%);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit}
+.container{width:min(1180px,calc(100% - 40px));margin:auto}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  color:#ff8a8c;font-weight:800;text-transform:uppercase;
+  letter-spacing:.12em;font-size:12px;margin-bottom:16px;
+}
+.eyebrow:before{content:"";width:34px;height:2px;background:var(--red)}
+.section-title{font-size:clamp(36px,5vw,62px);line-height:1.05;letter-spacing:-.04em;max-width:900px}
+.section-copy{color:var(--muted);font-size:18px;max-width:760px;margin-top:20px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:52px;padding:0 24px;border-radius:999px;
+  font-weight:800;border:1px solid transparent;cursor:pointer;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--red),#ff5659);
+  box-shadow:0 14px 36px rgba(239,43,45,.28);
+}
+.btn-secondary{border-color:#3a3a40;background:rgba(255,255,255,.03)}
+.badge{
+  display:inline-flex;padding:8px 12px;border-radius:999px;
+  border:1px solid rgba(239,43,45,.28);background:rgba(239,43,45,.08);
+  color:#ff8a8c;font-size:13px;font-weight:800;
+}
+
+/* Header */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(7,7,7,.78);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:28px}
+.logo{font-size:28px;font-weight:950;letter-spacing:.12em;color:var(--red)}
+.nav-links{display:flex;gap:28px;color:#d4d4d7;font-size:14px;font-weight:700}
+.nav-actions{display:flex;gap:12px}
+
+/* Hero */
+.hero{padding:96px 0 72px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
+.hero h1{font-size:clamp(52px,7vw,88px);line-height:.98;letter-spacing:-.06em}
+.hero h1 span{color:var(--red)}
+.hero p{font-size:19px;color:var(--muted);max-width:700px;margin:26px 0 32px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.hero-note{margin-top:22px;color:#85858c;font-size:14px}
+.ecosystem{
+  position:relative;min-height:520px;border:1px solid var(--line);
+  border-radius:32px;background:linear-gradient(145deg,#171719,#0c0c0e);
+  box-shadow:var(--shadow);overflow:hidden;padding:28px;
+}
+.ecosystem:before{
+  content:"";position:absolute;inset:-120px auto auto -100px;width:340px;height:340px;
+  background:radial-gradient(circle,rgba(239,43,45,.45),transparent 66%);
+}
+.ecosystem-top{display:flex;justify-content:space-between;align-items:center;position:relative}
+.mini-status{font-size:12px;color:var(--success);font-weight:800}
+.flow{
+  position:relative;display:grid;grid-template-columns:1fr 130px 1fr;
+  align-items:center;gap:16px;margin-top:70px;
+}
+.node{
+  background:rgba(255,255,255,.035);border:1px solid #34343a;
+  border-radius:22px;padding:22px;min-height:190px;position:relative;
+}
+.node h3{font-size:27px;margin:12px 0 8px}
+.node p{font-size:14px;color:#a9a9b0}
+.node.red{border-color:rgba(239,43,45,.55);box-shadow:0 0 40px rgba(239,43,45,.12)}
+.core{
+  width:130px;height:130px;border-radius:50%;display:grid;place-items:center;text-align:center;
+  background:radial-gradient(circle at 35% 30%,#ff6e70,var(--red) 42%,#7e080c 100%);
+  box-shadow:0 0 70px rgba(239,43,45,.36);font-weight:950;letter-spacing:.08em;
+}
+.flow-line{
+  position:absolute;left:19%;right:19%;top:50%;height:2px;
+  background:linear-gradient(90deg,var(--red),#ff7779,var(--red));opacity:.55;
+}
+.eco-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:54px}
+.eco-stat{padding:15px;border-radius:16px;background:#111114;border:1px solid #28282e}
+.eco-stat strong{display:block;color:#fff;font-size:20px}.eco-stat span{color:#8f8f96;font-size:12px}
+
+/* Sections */
+section{padding:100px 0}
+.problem-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:52px;margin-top:48px}
+.problem-card{padding:28px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
+.problem-card h3{margin-bottom:10px}.problem-card p{color:var(--muted)}
+.problem-list{display:grid;gap:14px}
+.problem-item{display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;padding:22px;border-bottom:1px solid var(--line)}
+.problem-item:last-child{border-bottom:0}
+.number{width:48px;height:48px;border-radius:14px;background:rgba(239,43,45,.1);color:#ff787a;display:grid;place-items:center;font-weight:900}
+
+/* Product sections */
+.product{
+  border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.product-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:60px;align-items:center}
+.product-grid.reverse{grid-template-columns:1.08fr .92fr}
+.product-label{font-size:14px;color:#ff8183;font-weight:900;letter-spacing:.12em}
+.product h2{font-size:clamp(44px,6vw,72px);line-height:1;margin:10px 0 20px}
+.product h2 small{display:block;font-size:20px;color:#b5b5bc;font-weight:600;margin-top:14px;letter-spacing:0}
+.product-copy{color:var(--muted);font-size:18px}
+.feature-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:28px}
+.feature-box{padding:20px;background:#111113;border:1px solid var(--line);border-radius:18px}
+.feature-box strong{display:block;margin-bottom:7px}
+.feature-box span{font-size:14px;color:#96969d}
+.mockup{padding:22px;border-radius:28px;background:linear-gradient(145deg,#19191c,#0d0d0f);border:1px solid #33333a;box-shadow:var(--shadow)}
+.mockup-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.mockup-title{font-weight:900}.dots{color:#616168}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi{padding:17px;background:#101012;border-radius:16px;border:1px solid #26262c}
+.kpi strong{display:block;font-size:22px;color:#ff7779}.kpi span{font-size:11px;color:#85858c}
+.chart{height:190px;margin-top:14px;border-radius:18px;background:
+linear-gradient(180deg,rgba(239,43,45,.08),transparent),
+repeating-linear-gradient(0deg,transparent 0 37px,#24242a 38px),
+repeating-linear-gradient(90deg,transparent 0 68px,#24242a 69px);
+position:relative;overflow:hidden}
+.chart svg{position:absolute;inset:0;width:100%;height:100%}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.module{padding:15px;border-radius:14px;background:#111113;border:1px solid #2a2a30;font-size:13px;color:#c8c8cd}
+
+/* MAGMA core */
+.core-section{background:
+radial-gradient(circle at 50% 20%,rgba(239,43,45,.13),transparent 35%),
+#09090a}
+.core-map{display:grid;grid-template-columns:1fr 170px 1fr;gap:28px;align-items:center;margin-top:56px}
+.core-column{display:grid;gap:14px}
+.core-card{padding:22px;border-radius:18px;background:#121214;border:1px solid var(--line)}
+.core-card h4{margin-bottom:6px}.core-card p{color:#929299;font-size:14px}
+.core-orb{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;text-align:center;margin:auto;background:radial-gradient(circle at 35% 30%,#ff6d70,var(--red) 42%,#74070b);box-shadow:0 0 90px rgba(239,43,45,.38);font-weight:950}
+
+/* Journey */
+.journey{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:44px}
+.journey-step{padding:26px;border-radius:22px;background:#121214;border:1px solid var(--line)}
+.journey-step b{display:block;color:#ff7779;font-size:14px;margin-bottom:18px}
+.journey-step h3{margin-bottom:10px}.journey-step p{color:#94949b;font-size:15px}
+
+/* CTA Form */
+.consult{
+  padding:110px 0;
+  background:
+   radial-gradient(circle at 15% 20%,rgba(239,43,45,.16),transparent 30%),
+   linear-gradient(180deg,#0c0c0e,#070707);
+}
+.form-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:54px;align-items:start}
+.consult-points{display:grid;gap:18px;margin-top:30px}
+.consult-point{display:flex;gap:14px;color:#c8c8cd}
+.check{width:28px;height:28px;border-radius:50%;background:rgba(239,43,45,.14);color:#ff7779;display:grid;place-items:center;flex:0 0 auto;font-weight:900}
+form{background:#111113;border:1px solid #303036;border-radius:28px;padding:30px;box-shadow:var(--shadow)}
+.form-title{font-size:28px;margin-bottom:8px}
+.form-desc{font-size:14px;color:#9999a0;margin-bottom:24px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.field{display:grid;gap:8px}
+.field.full{grid-column:1/-1}
+label{font-size:13px;font-weight:800;color:#d6d6da}
+input,select,textarea{
+  width:100%;border:1px solid #34343a;background:#0c0c0e;color:#fff;
+  border-radius:14px;padding:14px 15px;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(239,43,45,.1)}
+textarea{min-height:115px;resize:vertical}
+.consent{display:flex;gap:10px;color:#96969d;font-size:12px;margin:18px 0}
+.consent input{width:16px;height:16px;margin-top:2px}
+.submit{width:100%;border:0}
+.success-message{display:none;margin-top:16px;padding:14px;border-radius:14px;background:rgba(126,226,168,.08);border:1px solid rgba(126,226,168,.35);color:var(--success);font-size:14px}
+
+footer{padding:34px 0;border-top:1px solid #202024;color:#7f7f86;font-size:13px}
+.footer-row{display:flex;justify-content:space-between;gap:20px;align-items:center}
+
+@media(max-width:980px){
+  .nav-links{display:none}
+  .hero-grid,.problem-grid,.product-grid,.product-grid.reverse,.form-wrap{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}.flow-line{display:none}.core{margin:auto}
+  .core-map{grid-template-columns:1fr}.core-orb{order:-1}
+  .journey{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .container{width:min(100% - 28px,1180px)}
+  .nav-actions .btn-secondary{display:none}
+  .hero{padding-top:64px}
+  .feature-list,.kpis,.module-grid,.form-grid,.eco-stats,.journey{grid-template-columns:1fr}
+  section{padding:78px 0}
+  .ecosystem{min-height:auto}
+  .flow{margin-top:40px}
+  .footer-row{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a href="#top" class="logo">MAGMA</a>
+    <nav class="nav-links" aria-label="Điều hướng chính">
+      <a href="#magma">MAGMA</a>
+      <a href="#gama">GAMA</a>
+      <a href="#mata">MATA</a>
+      <a href="#journey">Cách hoạt động</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-secondary" href="#gama">Khám phá sản phẩm</a>
+      <a class="btn btn-primary" href="#consult">Đăng ký tư vấn</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Hệ sinh thái công nghệ cho doanh nghiệp thương mại</div>
+        <h1>Từ thu hút khách hàng đến <span>vận hành tăng trưởng.</span></h1>
+        <p>MAGMA kết nối GAMA và MATA trên một hệ sinh thái thống nhất, giúp hộ kinh doanh và doanh nghiệp nhỏ vừa tạo tương tác, vừa quản lý bán hàng, dữ liệu và vận hành bằng AI.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#consult">Nhận tư vấn giải pháp</a>
+          <a class="btn btn-secondary" href="#magma">Xem hệ sinh thái</a>
+        </div>
+        <div class="hero-note">Một nền tảng cho tăng trưởng dài hạn và phát triển bền vững.</div>
+      </div>
+
+      <div class="ecosystem">
+        <div class="ecosystem-top">
+          <strong>MAGMA Ecosystem</strong>
+          <span class="mini-status">● System connected</span>
+        </div>
+        <div class="flow">
+          <div class="flow-line"></div>
+          <div class="node red">
+            <span class="badge">Growth Layer</span>
+            <h3>GAMA</h3>
+            <p>Thu hút, tương tác và giữ chân khách hàng bằng gamification marketing tự động.</p>
+          </div>
+          <div class="core">MAGMA<br>CORE</div>
+          <div class="node">
+            <span class="badge">Operation Layer</span>
+            <h3>MATA</h3>
+            <p>Quản lý bán hàng, tồn kho, dữ liệu và workflow vận hành với AI.</p>
+          </div>
+        </div>
+        <div class="eco-stats">
+          <div class="eco-stat"><strong>01</strong><span>Hệ sinh thái thống nhất</span></div>
+          <div class="eco-stat"><strong>02</strong><span>Nền tảng cốt lõi</span></div>
+          <div class="eco-stat"><strong>360°</strong><span>Vòng đời tăng trưởng</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="magma">
+    <div class="container">
+      <div class="eyebrow">Vì sao cần MAGMA?</div>
+      <h2 class="section-title">Doanh nghiệp không thiếu công cụ. Doanh nghiệp thiếu một hệ sinh thái kết nối.</h2>
+      <p class="section-copy">Các công cụ marketing, quản lý bán hàng, tồn kho và dữ liệu thường hoạt động rời rạc. MAGMA kết nối hai nhu cầu quan trọng nhất của doanh nghiệp thương mại: tạo tăng trưởng và duy trì tăng trưởng.</p>
+
+      <div class="problem-grid">
+        <div class="problem-card">
+          <span class="badge">Khoảng trống thị trường</span>
+          <h3 style="font-size:34px;margin-top:18px">Nhiều phần mềm, nhiều dữ liệu, nhưng thiếu một hành trình thống nhất.</h3>
+          <p style="margin-top:16px">MAGMA giúp doanh nghiệp bắt đầu từ nhu cầu cấp thiết nhất, sau đó mở rộng năng lực số theo quy mô và mức độ trưởng thành thực tế.</p>
+        </div>
+        <div class="problem-list">
+          <div class="problem-item"><div class="number">01</div><div><h3>Marketing khó triển khai</h3><p>Thiếu nhân sự kỹ thuật, thời gian và ngân sách để xây chiến dịch tương tác riêng.</p></div></div>
+          <div class="problem-item"><div class="number">02</div><div><h3>Dữ liệu bị phân tán</h3><p>Thông tin khách hàng, chiến dịch, đơn hàng và tồn kho nằm ở nhiều hệ thống khác nhau.</p></div></div>
+          <div class="problem-item"><div class="number">03</div><div><h3>Vận hành thiếu tự động hóa</h3><p>Chủ doanh nghiệp vẫn phải theo dõi tồn kho, báo cáo và công việc bằng thao tác thủ công.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gama" class="product">
+    <div class="container product-grid">
+      <div>
+        <div class="product-label">01 / GROWTH ENGINE</div>
+        <h2>GAMA <small>Convenient Gamification Platform</small></h2>
+        <p class="product-copy">GAMA giúp doanh nghiệp tự tạo chiến dịch gamification mà không cần lập trình: chọn trò chơi, chọn module, thiết lập nhiệm vụ và phần thưởng, tùy chỉnh thương hiệu, sau đó xuất bản bằng đường dẫn hoặc mã QR.</p>
+        <div class="feature-list">
+          <div class="feature-box"><strong>Game Builder</strong><span>Tạo vòng quay, thử thách, nhiệm vụ, tích điểm, bộ sưu tập và nhiều loại game khác.</span></div>
+          <div class="feature-box"><strong>Module linh hoạt</strong><span>Chọn đúng nhóm tính năng và metrics phù hợp với từng mục tiêu chiến dịch.</span></div>
+          <div class="feature-box"><strong>Phân phối tức thì</strong><span>Tự động tạo link, mã QR và điểm chạm để doanh nghiệp đưa chiến dịch đến khách hàng.</span></div>
+          <div class="feature-box"><strong>Realtime Analytics</strong><span>Theo dõi lượt tham gia, tỷ lệ hoàn thành, thời gian chơi, đổi thưởng và quay lại.</span></div>
+        </div>
+      </div>
+      <div class="mockup">
+        <div class="mockup-head"><div class="mockup-title">GAMA Campaign Dashboard</div><div class="dots">● ● ●</div></div>
+        <div class="kpis">
+          <div class="kpi"><strong>12.480</strong><span>Người tham gia</span></div>
+          <div class="kpi"><strong>68%</strong><span>Tỷ lệ hoàn thành</span></div>
+          <div class="kpi"><strong>24%</strong><span>Tỷ lệ đổi thưởng</span></div>
+        </div>
+        <div class="chart">
+          <svg viewBox="0 0 600 190" preserveAspectRatio="none">
+            <path d="M0 155 C70 150,85 100,145 110 S235 155,300 90 S405 55,470 85 S545 35,600 45" fill="none" stroke="#ef2b2d" stroke-width="5"/>
+            <path d="M0 155 C70 150,85 100,145 110 S235 155,300 90 S405 55,470 85 S545 35,600 45 L600 190 L0 190 Z" fill="rgba(239,43,45,.13)"/>
+          </svg>
+        </div>
+        <div class="module-grid">
+          <div class="module">Hành vi người chơi</div>
+          <div class="module">Phần thưởng & đổi quà</div>
+          <div class="module">Retention & quay lại</div>
+          <div class="module">Doanh thu & ROI</div>
+          <div class="module">Nguồn truy cập</div>
+          <div class="module">Chống gian lận</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mata" class="product">
+    <div class="container product-grid reverse">
+      <div class="mockup">
+        <div class="mockup-head"><div class="mockup-title">MATA AI Retail Workspace</div><div class="dots">● ● ●</div></div>
+        <div class="kpis">
+          <div class="kpi"><strong>86</strong><span>Sản phẩm cần xử lý</span></div>
+          <div class="kpi"><strong>14</strong><span>Cảnh báo cận hạn</span></div>
+          <div class="kpi"><strong>7</strong><span>Workflow đang chạy</span></div>
+        </div>
+        <div class="problem-card" style="margin-top:14px">
+          <span class="badge">AI Bác sĩ hàng hóa</span>
+          <h3 style="margin-top:14px">Phát hiện tồn kho chậm và đề xuất hành động.</h3>
+          <p style="margin-top:8px">Đưa sản phẩm vào chiến dịch GAMA, tạo ưu đãi, điều chỉnh nhập hàng hoặc ưu tiên bán trước khi phát sinh lãng phí.</p>
+        </div>
+        <div class="module-grid">
+          <div class="module">Quản lý bán hàng</div>
+          <div class="module">Quản lý tồn kho</div>
+          <div class="module">Khách hàng & đơn hàng</div>
+          <div class="module">AI cảnh báo</div>
+          <div class="module">Workflow Agent</div>
+          <div class="module">Báo cáo vận hành</div>
+        </div>
+      </div>
+      <div>
+        <div class="product-label">02 / OPERATION ENGINE</div>
+        <h2>MATA <small>AI-powered Retail Management Platform</small></h2>
+        <p class="product-copy">MATA giúp hộ kinh doanh và doanh nghiệp thương mại quản lý bán hàng, sản phẩm, tồn kho, khách hàng và các quy trình vận hành trên giao diện đơn giản, dễ tiếp cận.</p>
+        <div class="feature-list">
+          <div class="feature-box"><strong>AI “Bác sĩ hàng hóa”</strong><span>Phát hiện hàng tồn lâu, sản phẩm cận hạn và rủi ro thất thoát.</span></div>
+          <div class="feature-box"><strong>Workflow AI Agent</strong><span>Tự động hóa cảnh báo, đề xuất nhập hàng, báo cáo và nhắc việc.</span></div>
+          <div class="feature-box"><strong>Quản trị All-in-one</strong><span>Kết nối dữ liệu sản phẩm, kho, đơn hàng, khách hàng và doanh thu.</span></div>
+          <div class="feature-box"><strong>Giao diện đơn giản</strong><span>Phù hợp với hộ kinh doanh chưa từng sử dụng hệ thống ERP/POS phức tạp.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="core-section">
+    <div class="container">
+      <div class="eyebrow">03 / MAGMA CORE</div>
+      <h2 class="section-title">Lớp kết nối biến dữ liệu marketing thành quyết định vận hành.</h2>
+      <p class="section-copy">MAGMA không chỉ đặt GAMA và MATA cạnh nhau. MAGMA Core kết nối dữ liệu hai chiều để doanh nghiệp nhìn thấy toàn bộ hành trình từ tương tác đến doanh thu.</p>
+
+      <div class="core-map">
+        <div class="core-column">
+          <div class="core-card"><h4>Dữ liệu từ GAMA</h4><p>Lượt chơi, nhiệm vụ, thời gian tương tác, đổi thưởng, tần suất quay lại và sở thích khách hàng.</p></div>
+          <div class="core-card"><h4>Growth Insights</h4><p>Xác định game, phần thưởng và nhóm khách hàng tạo ra hiệu quả tốt nhất.</p></div>
+        </div>
+        <div class="core-orb">MAGMA<br>DATA CORE</div>
+        <div class="core-column">
+          <div class="core-card"><h4>Dữ liệu từ MATA</h4><p>Sản phẩm, tồn kho, đơn hàng, doanh thu, khách hàng và hiệu quả vận hành.</p></div>
+          <div class="core-card"><h4>Operation Actions</h4><p>Tạo chiến dịch xử lý tồn kho, ưu tiên sản phẩm và tự động đề xuất module cần sử dụng.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="journey">
+    <div class="container">
+      <div class="eyebrow">Mô hình Land – Engage – Expand</div>
+      <h2 class="section-title">Doanh nghiệp bắt đầu nhỏ, tạo giá trị nhanh và mở rộng theo đúng nhu cầu.</h2>
+      <div class="journey">
+        <div class="journey-step"><b>BƯỚC 01</b><h3>Land</h3><p>Bắt đầu bằng một chiến dịch GAMA dễ triển khai, chi phí phù hợp.</p></div>
+        <div class="journey-step"><b>BƯỚC 02</b><h3>Engage</h3><p>Tạo tương tác, thu thập dữ liệu và hiểu hành vi khách hàng.</p></div>
+        <div class="journey-step"><b>BƯỚC 03</b><h3>Expand</h3><p>MAGMA đề xuất module MATA dựa trên nhu cầu quản trị thực tế.</p></div>
+        <div class="journey-step"><b>BƯỚC 04</b><h3>Grow</h3><p>Kết nối marketing và vận hành để tạo tăng trưởng dài hạn.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="consult" class="consult">
+    <div class="container form-wrap">
+      <div>
+        <div class="eyebrow">Đăng ký tư vấn MAGMA</div>
+        <h2 class="section-title">Tìm giải pháp phù hợp với mô hình kinh doanh của bạn.</h2>
+        <p class="section-copy">Hãy để lại thông tin. Đội ngũ MAGMA sẽ phân tích nhu cầu và tư vấn doanh nghiệp nên bắt đầu từ GAMA, MATA hay triển khai theo lộ trình hệ sinh thái.</p>
+        <div class="consult-points">
+          <div class="consult-point"><div class="check">✓</div><div><strong>Đánh giá nhu cầu hiện tại</strong><br><span style="color:#909097">Xác định vấn đề nằm ở marketing, dữ liệu hay vận hành.</span></div></div>
+          <div class="consult-point"><div class="check">✓</div><div><strong>Đề xuất module phù hợp</strong><br><span style="color:#909097">Không cần triển khai toàn bộ ngay từ đầu.</span></div></div>
+          <div class="consult-point"><div class="check">✓</div><div><strong>Xây lộ trình mở rộng</strong><br><span style="color:#909097">Từ chiến dịch đầu tiên đến hệ sinh thái quản trị hoàn chỉnh.</span></div></div>
+        </div>
+      </div>
+
+      <form id="consultForm">
+        <h3 class="form-title">Thông tin doanh nghiệp</h3>
+        <p class="form-desc">Các trường có dấu * là bắt buộc.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Họ và tên *</label>
+            <input id="name" name="name" required placeholder="Nguyễn Văn A">
+          </div>
+          <div class="field">
+            <label for="company">Tên doanh nghiệp *</label>
+            <input id="company" name="company" required placeholder="Công ty / Cửa hàng">
+          </div>
+          <div class="field">
+            <label for="phone">Số điện thoại *</label>
+            <input id="phone" name="phone" required placeholder="09xx xxx xxx">
+          </div>
+          <div class="field">
+            <label for="email">Email *</label>
+            <input id="email" name="email" type="email" required placeholder="email@company.com">
+          </div>
+          <div class="field">
+            <label for="business">Lĩnh vực kinh doanh</label>
+            <select id="business" name="business">
+              <option value="">Chọn lĩnh vực</option>
+              <option>Bán lẻ</option>
+              <option>Thực phẩm & đồ uống</option>
+              <option>Thời trang & mỹ phẩm</option>
+              <option>Dịch vụ</option>
+              <option>Thương mại điện tử</option>
+              <option>Khác</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="size">Quy mô doanh nghiệp</label>
+            <select id="size" name="size">
+              <option value="">Chọn quy mô</option>
+              <option>Hộ kinh doanh cá thể</option>
+              <option>1–10 nhân sự</option>
+              <option>11–50 nhân sự</option>
+              <option>51–200 nhân sự</option>
+              <option>Trên 200 nhân sự</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="interest">Bạn đang quan tâm giải pháp nào?</label>
+            <select id="interest" name="interest">
+              <option>GAMA — Gamification Marketing</option>
+              <option>MATA — Quản trị bán lẻ tích hợp AI</option>
+              <option>MAGMA — Hệ sinh thái tích hợp</option>
+              <option>Chưa xác định, cần được tư vấn</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="need">Nhu cầu hoặc vấn đề cần giải quyết</label>
+            <textarea id="need" name="need" placeholder="Ví dụ: muốn tăng tỷ lệ khách hàng quay lại, quản lý tồn kho tốt hơn hoặc kết nối dữ liệu marketing với bán hàng..."></textarea>
+          </div>
+        </div>
+
+        <label class="consent">
+          <input type="checkbox" required>
+          <span>Tôi đồng ý để MAGMA liên hệ và sử dụng thông tin trên nhằm mục đích tư vấn giải pháp.</span>
+        </label>
+
+        <button class="btn btn-primary submit" type="submit">Gửi yêu cầu tư vấn</button>
+        <div class="success-message" id="successMessage">Đã ghi nhận thông tin. Đây là bản demo giao diện; khi triển khai thật, form có thể kết nối với email, CRM hoặc Google Sheets.</div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-row">
+    <strong style="color:#d8d8dc">MAGMA — One platform for enduring growth and sustainable progress.</strong>
+    <span>© 2026 MAGMA Ecosystem. All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+document.getElementById('consultForm').addEventListener('submit', function(event){
+  event.preventDefault();
+  document.getElementById('successMessage').style.display = 'block';
+  this.querySelector('button[type="submit"]').textContent = 'Đã gửi thông tin';
+});
+</script>
+</body>
+</html>
